@@ -91,7 +91,7 @@ function Historys ({ navigation }) {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>音檔</Text>
         <Button
-          title="選單"
+          title="選dfbdfb單"
           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
         />
       </View>
