@@ -72,20 +72,64 @@ const Drawer = createDrawerNavigator();
 
 function Mainpage({ navigation }) {
   return (
-    <ScrollView>
-      <View>
-        <Button
-          title="選單"
-          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        />
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 2, backgroundColor: 'white' }}>
+        <View style={{ flex: 1, }}>
+        
+         
+          <View>
+            <SearchBar
+              placeholder="Type Here..."
+              platform="ios"
+              
+            // onChangeText={this.updateSearch}
+            // value={search}
+            />
+          </View>
+          <TouchableOpacity
+            style={{
+              
+              borderWidth: 1,
+              borderColor: 'rgba(0,0,0,0.2)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 50,
+              height: 50,
+              backgroundColor: 'black',
+              borderRadius: 10,
+            }}
+            
+            onPress={() =>
+              navigation.dispatch(DrawerActions.openDrawer())}
+          >
+            <Icon name={"align-justify"} size={25} color="white" />
+          </TouchableOpacity>
+
+        </View>
       </View>
-      <View>
-        <Button
-          title="錄音dfg"
-          onPress={() =>
-            navigation.navigate('錄音')} />
+
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
+          <TouchableOpacity
+            style={{
+              borderWidth: 1,
+              borderColor: 'rgba(0,0,0,0.2)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 80,
+              height: 80,
+              backgroundColor: 'red',
+              borderRadius: 50,
+            }}
+            onPress={() =>
+              navigation.navigate('錄音')}
+          >
+            <Icon name={"circle"} size={50} color="black" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
-
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 import { DrawerActions, useNavigation } from '@react-navigation/native';
@@ -11,6 +11,8 @@ import { Slider } from 'react-native-elements';
 
 import Sound from 'react-native-sound';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
+
+import historypage from './history';
 
 
 
@@ -27,6 +29,7 @@ export default class App extends Component {
             recording: false, //是否录音
             pause: false, //录音是否暂停
             stop: false, //录音是否停止
+            resume: false,
             currentTime: 0, //录音时长
 
         };
@@ -142,7 +145,7 @@ export default class App extends Component {
     // 播放录音
     _play = async () => {
         let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
-        
+
         let whoosh = new Sound(this.state.audioPath, '', (err) => {
             if (err) {
                 return console.log(err)
@@ -157,39 +160,206 @@ export default class App extends Component {
             })
         })
     }
+    UploadRequest(url, datas) {
+        let BaseUrl = 'http://www.baidu.com'  // 域名地址，根据自己的修改
+
+        const params = {
+            method: 'POST',
+            body: datas,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            timeout: 5000 // 5s超时
+        };
+
+        return fetch(`${BaseUrl}${url}`, params)
+            .then(response => response.json())
+            .then(data => data)
+            .catch(error => {
+                return { error_code: -3, error_msg: '请求异常，请重试' }
+            })
+
+    }
+
+    requestAudio = async (params) => {
+        let { path } = params
+        let formData = new FormData()
+        let soundPath = `file://${path}`  // 注意需要增加前缀 `file://`
+        let fileName = path.substring(path.lastIndexOf('/') + 1, path.length) // 文件名
+        let file = { uri: soundPath, type: "multipart/form-data", name: fileName } // 注意 `uri` 表示文件地址，`type` 表示接口接收的类型，一般为这个，跟后端确认一下
+        formData.append('file', file)
+        return await UploadRequest('自己的接口地址', formData) // `UploadRequest` 上传也是封装过，具体参考下面
+    }
+
+
+    _upload = async () => {
+        let { stop, audioPath } = this.state
+        if (stop) {
+            // 有录音
+            let params = {
+                path: "/data/user/0/com.helloworld2/files/test.aac"
+            }
+
+            let audioResult = await requestAudio(params);
+
+            console.log('audioResult----请求接口后返回的数据：', audioResult)
+        }
+
+    }
 
 
 
     render() {
-        let { recording, pause, currentTime } = this.state;
+        let { recording, pause, resume, stop, currentTime } = this.state;
         //要加上去
         const { navigation } = this.props;
 
         return (
-            <View style={styles.container}>
-                <View>
-                    <Button
-                        title="選單"
-                        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-                    />
+            <View style={{ flex: 1 }}>
+                <View style={{ flex: 2, justifyContent: 'space-between' }}>
+                    <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                        <TouchableOpacity
+                            style={{
+
+                                borderWidth: 1,
+                                borderColor: 'rgba(0,0,0,0.2)',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: 50,
+                                height: 50,
+                                backgroundColor: 'black',
+                                borderRadius: 10,
+                            }}
+
+                            onPress={() =>
+                                navigation.dispatch(DrawerActions.openDrawer())}
+                        >
+                            <Icon name={"align-justify"} size={25} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ flex: 2, justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={styles.text}>
+                            {
+                                recording ? '錄音中' :
+                                    pause ? '暫停' : '沒有錄音'
+
+                            }
+                        </Text>
+                        <Text style={styles.text}>時間長: {currentTime}</Text>
+                        <Text style={styles.text} onPress={this._upload}>上傳 </Text>
+                    </View>
                 </View>
-                <Text style={styles.text} onPress={this._record}> Record(開始) </Text>
 
-                <Text style={styles.text} onPress={this._pause}> Pause(暫停) </Text>
-                <Text style={styles.text} onPress={this._resume}> Resume(繼續) </Text>
-                <Text style={styles.text} onPress={this._stop}> Stop(結束) </Text>
-                <Text style={styles.text} onPress={this._play}> Play(播放) </Text>
-               
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        style={{
+                            borderWidth: 1,
+                            borderColor: 'rgba(0,0,0,0.2)',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: 60,
+                            height: 60,
+                            backgroundColor: 'red',
+                            borderRadius: 50,
+                        }}
+                        onPress={this._pause}
+                    >
+                        <Icon name={"pause"} size={30} color="black" />
+                    </TouchableOpacity>
+                    <View>
+                        {
 
-                <Text style={styles.text}>
-                    {
-                        recording ? '正在录音' :
-                            pause ? '已暂停' : '未开始'
-                    }
-                </Text>
-                <Text style={styles.text}>時間長: {currentTime}</Text>
+                            pause ?
+                                <TouchableOpacity
+                                    style={{
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(0,0,0,0.2)',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        width: 80,
+                                        height: 80,
+                                        backgroundColor: 'red',
+                                        borderRadius: 50,
+                                    }}
+                                    onPress={this._resume}
+                                >
+                                    <Icon name={"adjust"} size={50} color="black" />
+                                </TouchableOpacity>
+                                :
+                                stop ?
+                                    <View  style={{ flex: 1, flexDirection: 'column',  alignItems: 'center' }}>
+                                        <TouchableOpacity
+                                            style={{
+                                                borderWidth: 1,
+                                                borderColor: 'rgba(0,0,0,0.2)',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 60,
+                                                height: 60,
+                                                backgroundColor: 'red',
+                                                borderRadius: 50,
+                                            }}
+                                            onPress={() =>
+                                                navigation.navigate('歷史紀錄')}
+                                        >
+                                            <Icon name={"play"} size={30} color="black" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={{
+                                                borderWidth: 1,
+                                                borderColor: 'rgba(0,0,0,0.2)',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 80,
+                                                height: 80,
+                                                backgroundColor: 'red',
+                                                borderRadius: 50,
+                                            }}
+                                            onPress={this._record}
+                                        >
+                                            <Icon name={"circle"} size={50} color="black" />
+                                        </TouchableOpacity>
+                                    </View>
+                                    :
+                                    <TouchableOpacity
+                                        style={{
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(0,0,0,0.2)',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: 80,
+                                            height: 80,
+                                            backgroundColor: 'red',
+                                            borderRadius: 50,
+                                        }}
+                                        onPress={this._record}
+                                    >
+                                        <Icon name={"circle"} size={50} color="black" />
+                                    </TouchableOpacity>
+
+                        }
+                    </View>
+
+
+
+                    <TouchableOpacity
+                        style={{
+                            borderWidth: 1,
+                            borderColor: 'rgba(0,0,0,0.2)',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: 60,
+                            height: 60,
+                            backgroundColor: 'red',
+                            borderRadius: 50,
+                        }}
+                        onPress={this._stop}
+                    >
+                        <Icon name={"stop"} size={30} color="black" />
+                    </TouchableOpacity>
+
+                </View>
             </View>
-
 
         );
     }
