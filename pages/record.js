@@ -35,8 +35,9 @@ export default class App extends Component {
         };
     }
 
-
+  
     componentDidMount() {
+       
         // 请求授权
         AudioRecorder.requestAuthorization()
             .then(isAuthor => {
@@ -55,7 +56,8 @@ export default class App extends Component {
                     // data 返回需要上传到后台的录音数据
                     console.log(this.state.currentTime)
                     console.log(this.state.audioPath);
-                    console.log(this.state.whoosh);
+                    //console.log(this.state.whoosh);
+                    
                 };
             })
     };
@@ -132,18 +134,25 @@ export default class App extends Component {
 
     // 停止录音
     _stop = async () => {
+        //要加上去
+        const { navigation } = this.props;
         this.setState({ stop: true, recording: false, paused: false });
         try {
 
             await AudioRecorder.stopRecording();
+            
+            navigation.navigate('歷史紀錄',{url:this.state.audioPath});
+            
         } catch (error) {
             console.log("停止");
             console.error(error);
         }
+        
     }
 
     // 播放录音
     _play = async () => {
+       
         let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
 
         let whoosh = new Sound(this.state.audioPath, '', (err) => {
@@ -211,8 +220,7 @@ export default class App extends Component {
 
     render() {
         let { recording, pause, resume, stop, currentTime } = this.state;
-        //要加上去
-        const { navigation } = this.props;
+        
 
         return (
             <View style={{ flex: 1 }}>
@@ -287,7 +295,7 @@ export default class App extends Component {
                                 </TouchableOpacity>
                                 :
                                 stop ?
-                                    <View  style={{ flex: 1, flexDirection: 'column',  alignItems: 'center' }}>
+                                    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
                                         <TouchableOpacity
                                             style={{
                                                 borderWidth: 1,
@@ -300,7 +308,9 @@ export default class App extends Component {
                                                 borderRadius: 50,
                                             }}
                                             onPress={() =>
-                                                navigation.navigate('歷史紀錄')}
+                                                navigation.navigate('歷史紀錄')
+                                            }
+                                            
                                         >
                                             <Icon name={"play"} size={30} color="black" />
                                         </TouchableOpacity>
