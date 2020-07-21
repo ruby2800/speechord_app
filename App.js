@@ -66,8 +66,11 @@ import Sound from 'react-native-sound';
 
 import recordpage from './pages/record';
 import historypage from './pages/history';
+import wordpage from './pages/WordFile';
 
 const Drawer = createDrawerNavigator();
+
+
 
 
 function Mainpage({ navigation }) {
@@ -106,6 +109,7 @@ function Mainpage({ navigation }) {
           </TouchableOpacity>
 
         </View>
+
       </View>
 
       <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -153,6 +157,7 @@ function MyDrawer() {
       <Drawer.Screen name="初始頁面" component={Mainpage} />
       <Drawer.Screen name="錄音" component={recordpage} />
       <Drawer.Screen name="歷史紀錄" component={historypage} />
+      <Drawer.Screen name="逐字稿" component={wordpage} />
     </Drawer.Navigator>
   );
 }

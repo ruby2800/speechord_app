@@ -23,7 +23,7 @@ import { DrawerActions, useNavigation } from '@react-navigation/native';
 //     //whoosh.play();
 // })
 
-
+let whoosh;
 export default class mySound extends Component {
 
     constructor(props) {
@@ -52,12 +52,13 @@ export default class mySound extends Component {
 
 
         })
+        let time = this.props.route.params.time;
 
 
 
 
-
-        let totalTime = whoosh.getDuration();
+        let totalTime = time + 1;
+        //console.log("時間"+totalTime);
         totalTime = Math.ceil(totalTime);
         let totalMin = parseInt(totalTime / 60); //总分钟数
         let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
@@ -179,7 +180,22 @@ export default class mySound extends Component {
                     >
                         <Icon name={"align-justify"} size={25} color="white" />
                     </TouchableOpacity>
+                    <Slider
+                        // disabled //禁止滑动
+                        maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
+                        minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
+                        maximumValue={this.state.maximumValue} //滑块最大值
+                        minimumValue={0} //滑块最小值
+                        value={this.state.seconds}
+                        onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
+                            value = parseInt(value);
+                            this._getNowTime(value)
+                            // 设置播放时间
+                            whoosh.setCurrentTime(value);
+                        }}
+                    />
                     <View style={{ alignItems: 'center' }}>
+
 
                         <Text>{time.nowMin}:{time.nowSec}/{time.totalMin}:{time.totalSec}</Text>
                         <Text>目前音量: {this.state.volume}</Text>

@@ -25,6 +25,7 @@ export default class App extends Component {
         this.state = {
             hasPermission: undefined, //授权状态     
             //audioPath: AudioUtils.DocumentDirectoryPath + `/${new Date().getTime()}.aac`,  // 文件路径
+            //現在他上傳的時間 使用者名稱
             audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',  // 文件路径
             recording: false, //是否录音
             pause: false, //录音是否暂停
@@ -132,6 +133,8 @@ export default class App extends Component {
         }
     }
 
+    //
+
     // 停止录音
     _stop = async () => {
         //要加上去
@@ -141,7 +144,7 @@ export default class App extends Component {
 
             await AudioRecorder.stopRecording();
             
-            navigation.navigate('歷史紀錄',{url:this.state.audioPath});
+            navigation.navigate('歷史紀錄',{url:this.state.audioPath,time:this.state.currentTime});
             
         } catch (error) {
             console.log("停止");
@@ -151,24 +154,24 @@ export default class App extends Component {
     }
 
     // 播放录音
-    _play = async () => {
+    // _play = async () => {
        
-        let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
+    //     let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
 
-        let whoosh = new Sound(this.state.audioPath, '', (err) => {
-            if (err) {
-                return console.log(err)
-            }
-            whoosh.play(success => {
-                if (success) {
+    //     let whoosh = new Sound(this.state.audioPath, '', (err) => {
+    //         if (err) {
+    //             return console.log(err)
+    //         }
+    //         whoosh.play(success => {
+    //             if (success) {
 
-                    console.log('success - 播放成功')
-                } else {
-                    console.log('fail - 播放失败')
-                }
-            })
-        })
-    }
+    //                 console.log('success - 播放成功')
+    //             } else {
+    //                 console.log('fail - 播放失败')
+    //             }
+    //         })
+    //     })
+    // }
     UploadRequest(url, datas) {
         let BaseUrl = 'http://www.baidu.com'  // 域名地址，根据自己的修改
 
@@ -296,7 +299,7 @@ export default class App extends Component {
                                 :
                                 stop ?
                                     <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
-                                        <TouchableOpacity
+                                        {/* <TouchableOpacity
                                             style={{
                                                 borderWidth: 1,
                                                 borderColor: 'rgba(0,0,0,0.2)',
@@ -313,7 +316,7 @@ export default class App extends Component {
                                             
                                         >
                                             <Icon name={"play"} size={30} color="black" />
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> */}
                                         <TouchableOpacity
                                             style={{
                                                 borderWidth: 1,
