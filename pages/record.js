@@ -1,21 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
-
+// import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-
-
-import { Slider } from 'react-native-elements';
-
-
+import { Slider, Header, Icon } from 'react-native-elements';
 import Sound from 'react-native-sound';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
-
 import historypage from './history';
-
-
-
+// import wordpage from './pages/WordFile';
 
 
 
@@ -36,9 +27,9 @@ export default class App extends Component {
         };
     }
 
-  
+
     componentDidMount() {
-       
+
         // 请求授权
         AudioRecorder.requestAuthorization()
             .then(isAuthor => {
@@ -58,7 +49,7 @@ export default class App extends Component {
                     console.log(this.state.currentTime)
                     console.log(this.state.audioPath);
                     //console.log(this.state.whoosh);
-                    
+
                 };
             })
     };
@@ -143,19 +134,34 @@ export default class App extends Component {
         try {
 
             await AudioRecorder.stopRecording();
-            
-            navigation.navigate('歷史紀錄',{url:this.state.audioPath,time:this.state.currentTime});
-            
+
+            navigation.navigate('歷史紀錄', { url: this.state.audioPath, time: this.state.currentTime });
+
         } catch (error) {
             console.log("停止");
             console.error(error);
         }
-        
+
+    }
+
+    _readFile= async () => {
+        // create a path you want to delete
+        const path = this.state.audioPath;
+        return RNFS.readFile(path)
+            .then((result) => {
+                console.log(result);
+                this.setState({
+                    readTxtResult: result,
+                })
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
     }
 
     // 播放录音
     // _play = async () => {
-       
+
     //     let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
 
     //     let whoosh = new Sound(this.state.audioPath, '', (err) => {
@@ -172,64 +178,85 @@ export default class App extends Component {
     //         })
     //     })
     // }
-    UploadRequest(url, datas) {
-        let BaseUrl = 'http://www.baidu.com'  // 域名地址，根据自己的修改
+    // UploadRequest(url, datas) {
+    //     let BaseUrl = 'http://www.baidu.com'  // 域名地址，根据自己的修改
 
-        const params = {
-            method: 'POST',
-            body: datas,
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            timeout: 5000 // 5s超时
-        };
+    //     const params = {
+    //         method: 'POST',
+    //         body: datas,
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data'
+    //         },
+    //         timeout: 5000 // 5s超时
+    //     };
 
-        return fetch(`${BaseUrl}${url}`, params)
-            .then(response => response.json())
-            .then(data => data)
-            .catch(error => {
-                return { error_code: -3, error_msg: '请求异常，请重试' }
-            })
+    //     return fetch(`${BaseUrl}${url}`, params)
+    //         .then(response => response.json())
+    //         .then(data => data)
+    //         .catch(error => {
+    //             return { error_code: -3, error_msg: '请求异常，请重试' }
+    //         })
 
-    }
+    // }
 
-    requestAudio = async (params) => {
-        let { path } = params
-        let formData = new FormData()
-        let soundPath = `file://${path}`  // 注意需要增加前缀 `file://`
-        let fileName = path.substring(path.lastIndexOf('/') + 1, path.length) // 文件名
-        let file = { uri: soundPath, type: "multipart/form-data", name: fileName } // 注意 `uri` 表示文件地址，`type` 表示接口接收的类型，一般为这个，跟后端确认一下
-        formData.append('file', file)
-        return await UploadRequest('自己的接口地址', formData) // `UploadRequest` 上传也是封装过，具体参考下面
-    }
+    // requestAudio = async (params) => {
+    //     let { path } = params
+    //     let formData = new FormData()
+    //     let soundPath = `file://${path}`  // 注意需要增加前缀 `file://`
+    //     let fileName = path.substring(path.lastIndexOf('/') + 1, path.length) // 文件名
+    //     let file = { uri: soundPath, type: "multipart/form-data", name: fileName } // 注意 `uri` 表示文件地址，`type` 表示接口接收的类型，一般为这个，跟后端确认一下
+    //     formData.append('file', file)
+    //     return await UploadRequest('自己的接口地址', formData) // `UploadRequest` 上传也是封装过，具体参考下面
+    // }
 
 
-    _upload = async () => {
-        let { stop, audioPath } = this.state
-        if (stop) {
-            // 有录音
-            let params = {
-                path: "/data/user/0/com.helloworld2/files/test.aac"
-            }
+    // _upload = async () => {
+    //     let { stop, audioPath } = this.state
+    //     if (stop) {
+    //         // 有录音
+    //         let params = {
+    //             path: "/data/user/0/com.helloworld2/files/test.aac"
+    //         }
 
-            let audioResult = await requestAudio(params);
+    //         let audioResult = await requestAudio(params);
 
-            console.log('audioResult----请求接口后返回的数据：', audioResult)
-        }
+    //         console.log('audioResult----请求接口后返回的数据：', audioResult)
+    //     }
 
-    }
+    // }
 
 
 
     render() {
         let { recording, pause, resume, stop, currentTime } = this.state;
-        
+
 
         return (
             <View style={{ flex: 1 }}>
-                <View style={{ flex: 2, justifyContent: 'space-between' }}>
+                <View style={{ flex: 7, backgroundColor: 'white', justifyContent: 'space-between' }}>
                     <View style={{ flex: 1, justifyContent: 'space-between' }}>
-                        <TouchableOpacity
+                        <Header
+                            placement="left"
+                            backgroundColor='#E8E8E8'
+                            // containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
+                            leftComponent={{
+                                icon: 'arrowleft', type: 'antdesign', color: 'black',
+                                underlayColor: '#3488C0',
+                                onPress: () => navigation.openDrawer()
+                            }}
+
+                            centerComponent={{
+                                text: '錄音中...',
+                                style: {
+                                    fontSize: 20,
+                                    fontWeight: 'bold',
+                                    fontFamily: 'Fonts.Lato',
+                                    color: 'black'
+                                }
+                            }}
+                        />
+
+                        {/* <TouchableOpacity
                             style={{
 
                                 borderWidth: 1,
@@ -246,7 +273,7 @@ export default class App extends Component {
                                 navigation.dispatch(DrawerActions.openDrawer())}
                         >
                             <Icon name={"align-justify"} size={25} color="white" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     <View style={{ flex: 2, justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={styles.text}>
@@ -257,11 +284,11 @@ export default class App extends Component {
                             }
                         </Text>
                         <Text style={styles.text}>時間長: {currentTime}</Text>
-                        <Text style={styles.text} onPress={this._upload}>上傳 </Text>
+                        <Text style={styles.text} onPress={this._readFile}>上傳 </Text>
                     </View>
                 </View>
 
-                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flex: 1, backgroundColor: '#E8E8E8', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity
                         style={{
                             borderWidth: 1,

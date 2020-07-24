@@ -49,8 +49,8 @@ export default class App extends React.Component {
 
 
 import React, { Component } from 'react';
-import { View, Text, Button, ScrollView, TouchableOpacity } from 'react-native';
-import { SearchBar } from 'react-native-elements';
+import { View, Text, Button, ScrollView, TouchableOpacity} from 'react-native';
+import { SearchBar, Header, Icon} from 'react-native-elements';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import {
   createDrawerNavigator,
@@ -58,86 +58,73 @@ import {
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/FontAwesome';
+// import Icon from 'react-native-vector-icons/Entypo';
 
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
 import Sound from 'react-native-sound';
 
 
 import recordpage from './pages/record';
-import historypage from './pages/history';
+import soundpage from './pages/sound';
 import wordpage from './pages/WordFile';
+import historypage from './pages/history';
 
-const Drawer = createDrawerNavigator();
-
+import { color } from 'react-native-reanimated';
 
 
 
 function Mainpage({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 2, backgroundColor: 'white' }}>
-        <View style={{ flex: 1, }}>
-        
-         
-          <View>
-            <SearchBar
-              placeholder="Type Here..."
-              platform="ios"
-              
-            // onChangeText={this.updateSearch}
-            // value={search}
-            />
-          </View>
-          <TouchableOpacity
-            style={{
-              
-              borderWidth: 1,
-              borderColor: 'rgba(0,0,0,0.2)',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 50,
-              height: 50,
-              backgroundColor: 'black',
-              borderRadius: 10,
-            }}
-            
-            onPress={() =>
-              navigation.dispatch(DrawerActions.openDrawer())}
-          >
-            <Icon name={"align-justify"} size={25} color="white" />
-          </TouchableOpacity>
 
+        {/* Header&Body */}
+        <View style={{ flex: 7, backgroundColor: 'white' }}>
+          {/* <View style={{ flex: 1, }}>                     */}
+                <Header
+                    placement="left"
+                    // backgroundColor='#E8E8E8'
+                    backgroundColor='#3488C0'
+                    
+                    // containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
+                    leftComponent={{ icon: 'menu', type:'entypo', color: 'white', underlayColor: '#3488C0', onPress:() => navigation.openDrawer()}}
+                    centerComponent={{
+                        text: '語音列表',
+                        style: {
+                          fontSize: 20,
+                          fontWeight: 'bold',
+                          fontFamily: 'Fonts.Lato',
+                          color: 'white'
+                        }
+                    }}
+                />
+                <ScrollView>
+                    <SearchBar
+                      searchIcon={{size:15, color:'#A5A5A5'}}
+                      placeholder="Type Here..."
+                      placeholderTextColor='#A5A5A5'
+                      platform="ios"
+                      inputStyle={{fontSize:15}}
+                      inputContainerStyle={{ height:10 ,backgroundColor:'#ECECEC'}}
+                      containerStyle={{height:50, backgroundColor:'transparent'}}                                          
+                    // onChangeText={this.updateSearch}
+                    // value={search}
+                    />
+                </ScrollView>       
+          {/* </View> */}
         </View>
 
-      </View>
-
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-
-          <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderColor: 'rgba(0,0,0,0.2)',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 80,
-              height: 80,
-              backgroundColor: 'red',
-              borderRadius: 50,
-            }}
-            onPress={() =>
-              navigation.navigate('錄音')}
-          >
-            <Icon name={"circle"} size={50} color="black" />
-          </TouchableOpacity>
+        {/* Footer */}
+        <View style={{ flex: 1, backgroundColor: '#E8E8E8'}}>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon raised name='controller-record' type='entypo' color='red'
+                      onPress={() => navigation.navigate('錄音')}
+                />
+            </View>
         </View>
-      </View>
+
     </View>
   );
 }
-
-
 
 function CustomDrawerContent(props) {
   return (
@@ -145,25 +132,29 @@ function CustomDrawerContent(props) {
       <DrawerItemList {...props} />
       <DrawerItem
         label="關閉選單"
-        onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
+        // onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
+        onPress={() => props.navigation.closeDrawer()}
       />
 
     </DrawerContentScrollView>
   );
 }
+
+const Drawer = createDrawerNavigator();
 function MyDrawer() {
   return (
+    
     <Drawer.Navigator drawerContent={props => <CustomDrawerContent {...props} />}>
-      <Drawer.Screen name="初始頁面" component={Mainpage} />
-      <Drawer.Screen name="錄音" component={recordpage} />
-      <Drawer.Screen name="歷史紀錄" component={historypage} />
-      <Drawer.Screen name="逐字稿" component={wordpage} />
+        <Drawer.Screen name="初始頁面" component={Mainpage} />
+        <Drawer.Screen name="錄音" component={recordpage} />
+        <Drawer.Screen name="歷史紀錄" component={historypage} />
+        <Drawer.Screen name="播放" component={soundpage} />
+        {/* <Drawer.Screen name="逐字稿" component={wordpage} /> */}
     </Drawer.Navigator>
   );
 }
 
 export default function App() {
-
   return (
     <NavigationContainer>
       <MyDrawer />

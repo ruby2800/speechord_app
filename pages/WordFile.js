@@ -59,12 +59,13 @@ function MyTabs() {
   );
 }
 
-export default function App() {
+export default function WordFile() {
   return (
-    <NavigationContainer >
-      <FileHeader/>
-      <MyTabs />
-    </NavigationContainer>
+      <Text>gbrfbr</Text>
+    // <NavigationContainer >
+    //   <FileHeader/>
+    //   <MyTabs />
+    // </NavigationContainer>
   );
 }
 
