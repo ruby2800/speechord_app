@@ -250,54 +250,39 @@ export default class App extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 7, backgroundColor: 'white', justifyContent: 'space-between' }}>
-                    <View style={{ flex: 1, justifyContent: 'space-between' }}>
-                        <Header
-                            placement="left"
-                            backgroundColor='#E8E8E8'
-                            // containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
-                            leftComponent={{
-                                icon: 'arrowleft', type: 'antdesign', color: 'black',
-                                underlayColor: '#3488C0',
-                                onPress: () => navigation.openDrawer()
-                            }}
 
-                            centerComponent={{
-                                text:  
-                                    recording ? '錄音中' :
-                                        pause ? '暫停' : '沒有錄音'
-    
-                                ,
-                                style: {
-                                    fontSize: 20,
-                                    fontWeight: 'bold',
-                                    fontFamily: 'Fonts.Lato',
-                                    color: 'black'
-                                }
-                            }}
-                        />
+                    <Header
+                        placement="left"
+                        backgroundColor='#E8E8E8'
+                        // containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
+                        leftComponent={{
+                            icon: 'arrowleft', type: 'antdesign', color: 'black',
+                            underlayColor: '#3488C0',
+                            onPress: () => navigation.openDrawer()
+                        }}
 
-                        {/* <TouchableOpacity
-                            style={{
+                        centerComponent={{
+                            text:
+                                recording ? '錄音中' :
+                                    pause ? '暫停' : '沒有錄音'
 
-                                borderWidth: 1,
-                                borderColor: 'rgba(0,0,0,0.2)',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: 50,
-                                height: 50,
-                                backgroundColor: 'black',
-                                borderRadius: 10,
-                            }}
+                            ,
+                            style: {
+                                fontSize: 20,
+                                fontWeight: 'bold',
+                                fontFamily: 'Fonts.Lato',
+                                color: 'black'
+                            }
+                        }}
+                    />
 
-                            onPress={() =>
-                                navigation.dispatch(DrawerActions.openDrawer())}
-                        >
-                            <Icon name={"align-justify"} size={25} color="white" />
-                        </TouchableOpacity> */}
-                    </View>
-                    <View style={{ flex: 2, justifyContent: 'space-between', alignItems: 'center' }}>
-                       
-                        <Text style={styles.text}>時間長: {currentTime}</Text>
+                    <View style={{ flex: 2, justifyContent: 'space-around', alignItems: 'center' }}>
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <Icon name='mic' type='material' color='red' />
+                            <Text style={styles.text}>時間長: {currentTime}</Text>
+                        </View>
+
+                        
                         {/* <Text style={styles.text} onPress={this._readFile}>上傳 </Text> */}
                     </View>
                 </View>
@@ -344,7 +329,7 @@ export default class App extends Component {
                     </View>
 
                 </View>
-            </View>
+            </View >
 
         );
     }
