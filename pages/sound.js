@@ -80,10 +80,10 @@ export default class App extends Component {
                     console.log('fail - 播放失败')
                 }
             })
-            if (pause) {
+            // if (pause) {
 
-                whoosh.pause();
-            }
+            //     whoosh.pause();
+            // }
         });
 
         console.log("paly" + url);
