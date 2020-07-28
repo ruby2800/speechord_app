@@ -27,7 +27,7 @@ export default class App extends Component {
             //audioPath: AudioUtils.DocumentDirectoryPath + 'test.aac',  // 文件路径
             //現在他上傳的時間 使用者名稱
             //要尊守規定
-            audioPath: AudioUtils.DocumentDirectoryPath + `${year + '-' + month + '-' + day + '-' + hour + '-' + minute}.aac`,  // 文件路径
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year  + month  + day  + hour  + minute}.aac`,  // 文件路径
             recording: false, //是否录音
             pause: false, //录音是否暂停
             stop: false, //录音是否停止
@@ -149,7 +149,7 @@ export default class App extends Component {
             await AudioRecorder.stopRecording();
             // this._upload;
 
-            navigation.navigate('播放', { url: this.state.audioPath, time: this.state.currentTime });
+            navigation.navigate('歷史紀錄', { url: this.state.audioPath, time: this.state.currentTime });
 
         } catch (error) {
             console.log("停止");
@@ -258,7 +258,7 @@ export default class App extends Component {
                         leftComponent={{
                             icon: 'arrowleft', type: 'antdesign', color: 'black',
                             underlayColor: '#3488C0',
-                            onPress: () => navigation.openDrawer()
+                            onPress:() => this.props.navigation.navigate('初始頁面')
                         }}
 
                         centerComponent={{

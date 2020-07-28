@@ -57,6 +57,7 @@ export default class App extends Component {
         let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
         totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
         this.setState({
+           
             totalMin,
             totalSec,
             maximumValue: totalTime,
