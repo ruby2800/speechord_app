@@ -6,28 +6,33 @@ import { Icon, Slider, Header } from 'react-native-elements';
 import Sound from 'react-native-sound';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
 import historypage from './history';
-// import wordpage from './pages/WordFile';
 
-//時間
-var date = new Date();
 
-var year = date.getFullYear().toString();
-var month = (date.getMonth() + 1).toString();
-var day = date.getDate().toString();
-var hour = date.getHours().toString();
-var minute = date.getMinutes().toString();
+
 
 
 
 export default class App extends Component {
+ 
+
     constructor(props) {
+
         super(props);
+        //時間
+        var date = new Date();
+
+        var year = date.getFullYear().toString();
+        var month = (date.getMonth() + 1).toString();
+        var day = date.getDate().toString();
+        var hour = date.getHours().toString();
+        var minute = date.getMinutes().toString();
+
         this.state = {
             hasPermission: undefined, //授权状态     
             //audioPath: AudioUtils.DocumentDirectoryPath + 'test.aac',  // 文件路径
             //現在他上傳的時間 使用者名稱
             //要尊守規定
-            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year  + month  + day  + hour  + minute}.aac`,  // 文件路径
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year + month + day + hour + minute}.aac`,  // 文件路径
             recording: false, //是否录音
             pause: false, //录音是否暂停
             stop: false, //录音是否停止
@@ -39,6 +44,7 @@ export default class App extends Component {
 
 
     componentDidMount() {
+
 
         // 请求授权
         AudioRecorder.requestAuthorization()
@@ -147,6 +153,9 @@ export default class App extends Component {
         try {
 
             await AudioRecorder.stopRecording();
+            //this.refunction();
+
+
             // this._upload;
 
             navigation.navigate('歷史紀錄', { url: this.state.audioPath, time: this.state.currentTime });
@@ -258,7 +267,7 @@ export default class App extends Component {
                         leftComponent={{
                             icon: 'arrowleft', type: 'antdesign', color: 'black',
                             underlayColor: '#3488C0',
-                            onPress:() => this.props.navigation.navigate('初始頁面')
+                            onPress: () => this.props.navigation.navigate('初始頁面')
                         }}
 
                         centerComponent={{
@@ -282,7 +291,7 @@ export default class App extends Component {
                             <Text style={styles.text}>時間長: {currentTime}</Text>
                         </View>
 
-                        
+
                         {/* <Text style={styles.text} onPress={this._readFile}>上傳 </Text> */}
                     </View>
                 </View>

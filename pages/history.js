@@ -10,11 +10,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 export default class history extends Component {
     state = {
-        response: []
+        response: [],
+        refresh: true
     }
-
-
-
+    refunction(){
+        
+        setState:({refresh:false})
+    }
     componentDidMount() {
         this.ReadDir();
     }
@@ -78,6 +80,7 @@ export default class history extends Component {
         let { response } = this.state;
         const { navigation } = this.props;
 
+
         return (
 
             <View style={{ flex: 1 }} >
@@ -115,7 +118,7 @@ export default class history extends Component {
                                     subtitle={l.subtitle}
                                     bottomDivider
                                     rightIcon={{ name: 'delete' }}
-                                    onPress={() => navigation.navigate('播放', { url: l.path, time: 5 })}
+                                    onPress={() => navigation.navigate('播放', { url: l.path, time: 5 ,name: l.name})}
                                     onLongPress={() => {
 
                                         Alert.alert(

@@ -6,126 +6,133 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Sound from 'react-native-sound'
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import WordFile from './WordFile';
-//const { navigation } = this.props;
-// const { route } = this.props;
-// const { url } = route.params;
-//import { audioPath } from './record';
-// let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
 
-// console.log("mont李"+ url);
-// let whoosh = new Sound(url,'', err => {
-//     if (err) {
-//         console.log(err + "dfwef");
-//     }
-//     //whoosh.play();
-// })
-//const whoosh =new Sound();
+let whoosh;
 
 
 export default class App extends Component {
 
+
     constructor(props) {
         super(props);
+
         this.state = {
             volume: 0.5,
-            seconds: 0, //秒数
-            totalMin: '', //总分钟
-            totalSec: '', //总分钟秒数
-            nowMin: 0, //当前分钟
-            nowSec: 0, //当前秒钟
-            maximumValue: 0, //滑块最大值
+            seconds: 0, //秒數
+            totalMin: '', //總分鐘
+            totalSec: '', //總秒數
+            nowMin: 0, //目前分鐘
+            nowSec: 0, //目前秒鐘
+            maximumValue: 0, //滑輪直
             play: false,
             pause: false
         }
+
     }
     componentDidMount() {
+        //音檔位置
         let url = this.props.route.params.url;
-        let whoosh = new Sound(url, '', (err) => {
+        //初始化
+        whoosh = new Sound(url, '', (err) => {
             if (err) {
                 return console.log("??" + err)
             }
 
+            let totalTime = whoosh.getDuration();
+            //let totalTime = time + 1;
+            console.log("時間" + totalTime);
+            totalTime = Math.ceil(totalTime);
+            let totalMin = parseInt(totalTime / 60); //总分钟数
+            let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
+            totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
+            this.setState({
+
+                totalMin,
+                totalSec,
+                maximumValue: totalTime,
+            })
 
         })
-        let time = this.props.route.params.time;
-        //get有問題
-        //let totalTime = whoosh.getDuration();
-        let totalTime = time + 1;
-        console.log("時間" + totalTime);
-        totalTime = Math.ceil(totalTime);
-        let totalMin = parseInt(totalTime / 60); //总分钟数
-        let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
-        totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
-        this.setState({
-           
-            totalMin,
-            totalSec,
-            maximumValue: totalTime,
-        })
+
     }
     componentWillUnmount() {
         this.time && clearTimeout(this.time);
+
     }
     // 播放
     _play = () => {
-        //  let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
+        this.setState({ pause: false, play: true })
+
+
         let url = this.props.route.params.url;
-        let whoosh = new Sound(url, '', (err) => {
+        whoosh = new Sound(url, '', (err) => {
+
+            let totalTime = whoosh.getDuration();
+            //let totalTime = time + 1;
+            console.log("時間" + totalTime);
+            totalTime = Math.ceil(totalTime);
+            let totalMin = parseInt(totalTime / 60); //总分钟数
+            let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
+            totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
+            this.setState({
+
+                totalMin,
+                totalSec,
+                maximumValue: totalTime,
+            })
+
             if (err) {
                 return console.log(+err)
             }
+           
+
             whoosh.play(success => {
+
                 if (success) {
                     console.log('success - 播放成功')
+                    this._stop();
                 } else {
                     console.log('fail - 播放失败')
                 }
             })
-            // if (pause) {
 
-            //     whoosh.pause();
-            // }
         });
 
-        console.log("paly" + url);
+        console.log("play" + url);
+
         this.time = setInterval(() => {
             whoosh.getCurrentTime(seconds => {
                 seconds = Math.ceil(seconds);
                 this._getNowTime(seconds)
             })
         }, 1000)
+        if (this.state.pause) {
+            whoosh.pause();
+            console.log("pasue");
+        }
 
-        this.setState({ pause: false, play: true })
-        // let { pause } = this.state
-        // if(pause){
-
-        //     whoosh.pause();
-        // }
     }
     // 暂停
     _pause = () => {
 
-        // let url = this.props.route.params.url;
-        // let whoosh = new Sound(url, '', (err) => {
-        //     if (err) {
-        //         return console.log(err)
-        //     }
-        // })
-        // clearInterval(this.time);
+      
         clearInterval(this.time);
         this.setState({ pause: true, play: false })
-        // whoosh.pause();
+        whoosh.pause();
     }
-    // 停止
-    // _stop = () => {
-    //     clearInterval(this.time);
-    //     this.setState({
-    //         nowMin: 0,
-    //         nowSec: 0,
-    //         seconds: 0,
-    //     })
-    //     whoosh.stop();
-    // }
+
+    //恢復
+    _stop = () => {
+
+        clearInterval(this.time);
+        this.setState({
+            nowMin: 0,
+            nowSec: 0,
+            seconds: 0,
+        })
+        this.setState({ pause: true, play: false })
+
+    }
     _getNowTime = (seconds) => {
         let nowMin = this.state.nowMin,
             nowSec = this.state.nowSec;
@@ -159,7 +166,7 @@ export default class App extends Component {
                     }}
 
                     centerComponent={{
-                        text: '20200203 錄音一',
+                        text: this.props.route.params.name,
                         style: {
                             fontSize: 20,
                             fontWeight: 'bold',
@@ -169,7 +176,7 @@ export default class App extends Component {
                     }}
                     rightComponent={{ icon: 'export', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
                 />
-                <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around'}}>
+                <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around' }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                         <View>
                             <Text>{time.nowMin}:{time.nowSec}/{time.totalMin}:{time.totalSec}</Text>
@@ -191,8 +198,9 @@ export default class App extends Component {
                                         backgroundColor: 'black',
                                         borderRadius: 10,
                                     }}
-
                                     onPress={this._pause}
+
+                                // onPress= {this.onPress(this,'foo')}
                                 >
                                     <Icon name={"pause"} size={25} color="white" />
                                 </TouchableOpacity>
@@ -218,6 +226,8 @@ export default class App extends Component {
                         </View>
                     </View>
                     <View>
+
+
                         <Slider
                             // disabled //禁止滑动
                             maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
@@ -230,8 +240,22 @@ export default class App extends Component {
                                 this._getNowTime(value)
                                 // 设置播放时间
                                 whoosh.setCurrentTime(value);
-                            }}
-                        />
+                            }} />
+
+                        {/* //         <Slider
+                    //             // disabled //禁止滑动
+                    //             maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
+                    //             minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
+                    //             maximumValue={this.state.maximumValue} //滑块最大值
+                    //             minimumValue={0} //滑块最小值
+                    //             value={0}
+                    //             onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
+                    //                 value = parseInt(value);
+                    //                 this._getNowTime(value)
+                    //                 // 设置播放时间
+                    //                 whoosh.setCurrentTime(value);
+                    //             }} />
+                    // } */}
                     </View>
                 </View>
                 <View style={{ flex: 4, backgroundColor: 'white' }}>
