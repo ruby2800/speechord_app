@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, RefreshControl } from 'react-native';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { Icon, Slider, Header } from 'react-native-elements';
@@ -9,35 +9,38 @@ import historypage from './history';
 
 
 
+var date = new Date();
 
+var year = date.getFullYear().toString();
+var month = (date.getMonth() + 1).toString();
+var day = date.getDate().toString();
+var hour = date.getHours().toString();
+var minute = date.getMinutes().toString();
+var second = date.getSeconds().toString();
 
 
 export default class App extends Component {
- 
+
+
 
     constructor(props) {
 
         super(props);
         //時間
-        var date = new Date();
 
-        var year = date.getFullYear().toString();
-        var month = (date.getMonth() + 1).toString();
-        var day = date.getDate().toString();
-        var hour = date.getHours().toString();
-        var minute = date.getMinutes().toString();
 
         this.state = {
             hasPermission: undefined, //授权状态     
             //audioPath: AudioUtils.DocumentDirectoryPath + 'test.aac',  // 文件路径
             //現在他上傳的時間 使用者名稱
             //要尊守規定
-            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year + month + day + hour + minute}.aac`,  // 文件路径
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year + month + day + hour + minute + second}.aac`,  // 文件路径
             recording: false, //是否录音
             pause: false, //录音是否暂停
             stop: false, //录音是否停止
             resume: false,
             currentTime: 0, //录音时长
+
 
         };
     }
@@ -94,6 +97,7 @@ export default class App extends Component {
 
     // 开始录音
     _record = async () => {
+
         if (!this.state.hasPermission) {
             return alert('沒有授權')
         }
@@ -140,7 +144,27 @@ export default class App extends Component {
         }
     }
 
-    //
+//重新整裡
+
+    forceRemount() {
+        console.log("reload");
+
+        date = new Date();
+
+        year = date.getFullYear().toString();
+        month = (date.getMonth() + 1).toString();
+        day = date.getDate().toString();
+        hour = date.getHours().toString();
+        minute = date.getMinutes().toString();
+        second = date.getSeconds().toString();
+
+        this.setState({
+
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year + month + day + hour + minute + second}.aac`,  // 文件路径
+            currentTime: 0, //录音时长
+        })
+
+    }
 
     // 停止录音
     _stop = async () => {
@@ -151,6 +175,7 @@ export default class App extends Component {
             return alert('未錄音')
         }
         try {
+            this.forceRemount();
 
             await AudioRecorder.stopRecording();
             //this.refunction();
@@ -158,7 +183,7 @@ export default class App extends Component {
 
             // this._upload;
 
-            navigation.navigate('歷史紀錄', { url: this.state.audioPath, time: this.state.currentTime });
+            navigation.navigate('歷史紀錄', { url: this.state.audioPath, reload:0 });
 
         } catch (error) {
             console.log("停止");
@@ -167,40 +192,7 @@ export default class App extends Component {
 
     }
 
-    _readFile = async () => {
-        // create a path you want to delete
-        const path = this.state.audioPath;
-        return RNFS.readFile(path)
-            .then((result) => {
-                console.log(result);
-                this.setState({
-                    readTxtResult: result,
-                })
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
-    }
 
-    // 播放录音
-    // _play = async () => {
-
-    //     let url = 'https://languagezenstorage.blob.core.windows.net/media0/xgcUXjHhP8.mp3';
-
-    //     let whoosh = new Sound(this.state.audioPath, '', (err) => {
-    //         if (err) {
-    //             return console.log(err)
-    //         }
-    //         whoosh.play(success => {
-    //             if (success) {
-
-    //                 console.log('success - 播放成功')
-    //             } else {
-    //                 console.log('fail - 播放失败')
-    //             }
-    //         })
-    //     })
-    // }
     UploadRequest(url, datas) {
         let BaseUrl = 'http://www.baidu.com'  // 域名地址，根据自己的修改
 
@@ -255,8 +247,8 @@ export default class App extends Component {
         let { recording, pause, resume, stop, currentTime } = this.state;
         const { navigation } = this.props;
 
-
         return (
+
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 7, backgroundColor: 'white', justifyContent: 'space-between' }}>
 
@@ -267,7 +259,7 @@ export default class App extends Component {
                         leftComponent={{
                             icon: 'arrowleft', type: 'antdesign', color: 'black',
                             underlayColor: '#3488C0',
-                            onPress: () => this.props.navigation.navigate('初始頁面')
+                            onPress: () => this.props.navigation.navigate('歷史紀錄')
                         }}
 
                         centerComponent={{

@@ -83,6 +83,10 @@ target 'HelloWorld2' do
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
   target 'HelloWorld2Tests' do
     inherit! :complete
     # Pods for testing

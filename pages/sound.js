@@ -242,20 +242,6 @@ export default class App extends Component {
                                 whoosh.setCurrentTime(value);
                             }} />
 
-                        {/* //         <Slider
-                    //             // disabled //禁止滑动
-                    //             maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
-                    //             minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
-                    //             maximumValue={this.state.maximumValue} //滑块最大值
-                    //             minimumValue={0} //滑块最小值
-                    //             value={0}
-                    //             onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
-                    //                 value = parseInt(value);
-                    //                 this._getNowTime(value)
-                    //                 // 设置播放时间
-                    //                 whoosh.setCurrentTime(value);
-                    //             }} />
-                    // } */}
                     </View>
                 </View>
                 <View style={{ flex: 4, backgroundColor: 'white' }}>
