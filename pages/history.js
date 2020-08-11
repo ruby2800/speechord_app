@@ -17,28 +17,28 @@ const wait = (timeout) => {
     });
 }
 
-var request = require('request');
-var fs = require('fs');
-var options = {
-  'method': 'POST',
-  'url': '140.115.81.238:5000/testUpload',
-  'headers': {
-    'Content-Type': 'multipart/form-data; boundary=--------------------------609497566538468192188435'
-  },
-  formData: {
-    'file': {
-      'value': fs.createReadStream('/C:/Users/ruby/Downloads/錄製.aac'),
-      'options': {
-        'filename': '/C:/Users/ruby/Downloads/錄製.aac',
-        'contentType': null
-      }
-    }
-  }
-};
-request(options, function (error, response) { 
-  if (error) throw new Error(error);
-  console.log(response.body);
-});
+// var request = require('request');
+// var fs = require('react-native-fs');
+// var options = {
+//   'method': 'POST',
+//   'url': '140.115.81.238:5000/testUpload',
+//   'headers': {
+//     'Content-Type': 'multipart/form-data; boundary=--------------------------609497566538468192188435'
+//   },
+//   formData: {
+//     'file': {
+//       'value': fs.createReadStream('/C:/Users/ruby/Downloads/錄製.aac'),
+//       'options': {
+//         'filename': '/C:/Users/ruby/Downloads/錄製.aac',
+//         'contentType': null
+//       }
+//     }
+//   }
+// };
+// request(options, function (error, response) { 
+//   if (error) throw new Error(error);
+//   console.log(response.body);
+// });
 
 
 
@@ -194,163 +194,290 @@ export default class history extends Component {
     // _upload(uri) {
 
 
-        // return fetch(url)
-        //     .then(function (response) {
-        //         return response.json();
-        //     })
-        //     .then(function (json) {
-        //         return {
-        //             city: json.name,
-        //             temperature: kelvinToF(json.main.temp),
-        //             description: _.capitalize(json.weather[0].description)
-        //         }
-        //     })
-        //     .catch(function (error) {
-        //         console.log('There has been a problem with your fetch operation: ' + error.message);
-        //         // ADD THIS THROW error
-        //         throw error;
-        //     });
+    // return fetch(url)
+    //     .then(function (response) {
+    //         return response.json();
+    //     })
+    //     .then(function (json) {
+    //         return {
+    //             city: json.name,
+    //             temperature: kelvinToF(json.main.temp),
+    //             description: _.capitalize(json.weather[0].description)
+    //         }
+    //     })
+    //     .catch(function (error) {
+    //         console.log('There has been a problem with your fetch operation: ' + error.message);
+    //         // ADD THIS THROW error
+    //         throw error;
+    //     });
 
-        // let uriParts = uri.split('.');
-        // let fileType = uriParts[uriParts.length - 1];
-        // console.log(fileType);
+    // let uriParts = uri.split('.');
+    // let fileType = uriParts[uriParts.length - 1];
+    // console.log(fileType);
 
-        // let formData = new FormData();
-        // formData.append('file', {
-        //     uri,
-        //     name: `recording.${fileType}`,
-        //     type: `${fileType}`,
-        // });
-        // //  fetch('140.115.81.238:5000/testUpload')
-        // // .then(() => {
+    // let formData = new FormData();
+    // formData.append('file', {
+    //     uri,
+    //     name: `recording.${fileType}`,
+    //     type: `${fileType}`,
+    // });
+    // //  fetch('140.115.81.238:5000/testUpload')
+    // // .then(() => {
 
-        // fetch('140.115.81.238:5000/testUpload', {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'multipart/form-data',
-        //     },
-        //     body: formData
-        // }).then(r => {
+    // fetch('140.115.81.238:5000/testUpload', {
+    //     method: 'POST',
+    //     headers: {
+    //         Accept: 'application/json',
+    //         'Content-Type': 'multipart/form-data',
+    //     },
+    //     body: formData
+    // }).then(r => {
 
-        //     console.log('data value:' + r)
-
-
-        // }).catch((error) => {
-        //     console.error(error);
-        // });
-        // console.log("Uploading " + uri);
-        // let apiUrl = '140.115.81.238:5000/testUpload';
-        // let uriParts = uri.split('.');
-        // let fileType = uriParts[uriParts.length - 1];
-        // console.log(fileType);
+    //     console.log('data value:' + r)
 
 
+    // }).catch((error) => {
+    //     console.error(error);
+    // });
+    // console.log("Uploading " + uri);
+    // let apiUrl = '140.115.81.238:5000/testUpload';
+    // let uriParts = uri.split('.');
+    // let fileType = uriParts[uriParts.length - 1];
+    // console.log(fileType);
 
-        // let options = {
-        //     method: 'POST',
-        //     body: formData,
-        //     headers: {
-        //         // 'Accept': 'application/json',
-        //         'Content-Type': 'multipart/form-data',
-        //     },
-        // };
 
-        // console.log("POSTing " + uri + " to " + apiUrl);
-        // console.log(formData);
-        // return fetch(apiUrl, options);
+
+    // let options = {
+    //     method: 'POST',
+    //     body: formData,
+    //     headers: {
+    //         // 'Accept': 'application/json',
+    //         'Content-Type': 'multipart/form-data',
+    //     },
+    // };
+
+    // console.log("POSTing " + uri + " to " + apiUrl);
+    // console.log(formData);
+    // return fetch(apiUrl, options);
     // }
+    //libary 可傳但會傳不出去
 
-    _upload(file_path) {
-
-
-        // let uriParts = uri.split('.');
-        // let fileType = uriParts[uriParts.length - 1];
-
-        // let formData = new FormData();
-        // formData.append('file', {
-        //   uri,
-        //   name: `recording.${fileType}`,
-        //   type: `audio/x-${fileType}`,
-        // });
+    // _upload(file_path) {
 
 
-        let options = {
+    //     // let uriParts = uri.split('.');
+    //     // let fileType = uriParts[uriParts.length - 1];
 
-            url: 'http://140.115.81.238:5000/testUpload',
-            path: file_path,
-            method: 'POST',
-              type: 'multipart',
-             field: 'uploaded_media',
-            // maxRetries: 2, // set retry count (Android only). Default 2
-            headers: {
-                'Content-Type': 'multipart/form-data', // Customize content-type
-            },
-            useUtf8Charset: true
-            // Below are options only supported on Android
-            // notification: {
-            //     enabled: true
-            // },
+    //     // let formData = new FormData();
+    //     // formData.append('file', {
+    //     //   uri,
+    //     //   name: `recording.${fileType}`,
+    //     //   type: `audio/x-${fileType}`,
+    //     // });
 
-        }
 
-        Upload.startUpload(options).then((uploadId) => {
-            console.log('Upload started')
-            console.log(file_path);
-            Upload.addListener('progress', uploadId, (data) => {
-                console.log(`Progress: ${data.progress}%`)
+    //     let options = {
+
+    //         url: 'http://140.115.81.238:5000/testUpload',
+    //         path: file_path,
+    //         method: 'POST',
+    //           type: 'multipart',
+    //          field: 'uploaded_media',
+    //         // maxRetries: 2, // set retry count (Android only). Default 2
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data; boundary=--------------------------609497566538468192188435' // Customize content-type
+    //         },
+    //         useUtf8Charset: true
+    //         // Below are options only supported on Android
+    //         // notification: {
+    //         //     enabled: true
+    //         // },
+
+    //     }
+
+    //     Upload.startUpload(options).then((uploadId) => {
+    //         console.log('Upload started')
+    //         console.log(file_path);
+    //         Upload.addListener('progress', uploadId, (data) => {
+    //             console.log(`Progress: ${data.progress}%`)
+    //         })
+    //         Upload.addListener('error', uploadId, (data) => {
+    //             console.log(`Error: ${data.error}%`)
+    //             // console.log(`Error: ${data.}%`)
+    //         })
+    //         Upload.addListener('cancelled', uploadId, (data) => {
+    //             console.log(`Cancelled!`)
+    //         })
+    //         Upload.addListener('completed', uploadId, (data) => {
+    //             // data includes responseCode: number and responseBody: Object
+    //             console.log('Completed!')
+    //         })
+    //     }).catch((err) => {
+    //         console.log('Upload error!', err)
+    //     })
+
+    // }
+    //react audio 改編
+    // _upload(uri) {
+    //     console.log("Uploading " + uri);
+    //     let apiUrl = 'http://140.115.81.199:9943/audioUpload';
+    //     let uriParts = uri.split('.');
+    //     let fileType = uriParts[uriParts.length - 1];
+    //     uri = 'file://${AudioUtils.DocumentDirectoryPath}/name-2020811841.aac';
+    //     let formData = new FormData();
+    //     formData.append('file', {
+    //         uri,
+    //         name: `recording.${fileType}`,
+    //         type: `audio/x-${fileType}`,
+    //     });
+
+    //     let options = {
+    //         method: 'POST',
+    //         body: formData,
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'multipart/form-data',
+    //         },
+    //     };
+
+    //     console.log("POSTing " + uri + " to " + apiUrl);
+    //     return fetch(apiUrl, options);
+    // }
+    //react adio 寫法
+    // _upload = async (datas) => {
+    //     const path = `file://${AudioUtils.DocumentDirectoryPath}/name-2020811841.aac`
+    //     const formData = new FormData()
+    //     formData.append('file', {
+    //       uri: path,
+    //       name: 'test.aac',
+    //       type: 'audio/aac',
+    //     })
+    //     try {
+    //       const res = await fetch(http://140.115.81.199:9943/audioUpload", {
+    //         method: 'POST',
+    //         header: {
+    //           'Content-Type': 'multipart/form-data',
+    //         },
+    //         body: formData,
+    //       })
+    //       const json = await res.json()
+    //     } catch (err) {
+    //       alert(err)
+    //     }
+    //   }
+
+    //沒有CONTENT TYPE
+    _upload(datas) {
+
+        let formData = new FormData();
+        formData.append('file', { uri: `file://${datas}`, name: "test", type: 'multipart/form-data' })
+        let name="testClient"
+        fetch(`http://140.115.81.199:9943/audioUpload/${name}`,
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'multipart/form-data'
+                    // 'Content-Type': 'application/json'
+                },
+                // body: JSON.stringify({
+                //     firstParam: 'yourValue',
+                //     secondParam: 'yourOtherValue'
+                //   })
+                body: formData
             })
-            Upload.addListener('error', uploadId, (data) => {
-                console.log(`Error: ${data.error}%`)
-                // console.log(`Error: ${data.}%`)
+            .then(response => {
+                 console.log(response.status);
+                //console.log("formdata" + response.formData() + "blob" + response.blob + "status" + response.status)
             })
-            Upload.addListener('cancelled', uploadId, (data) => {
-                console.log(`Cancelled!`)
+            .then(result => {
+                console.log("success", result)
             })
-            Upload.addListener('completed', uploadId, (data) => {
-                // data includes responseCode: number and responseBody: Object
-                console.log('Completed!')
+            .catch(error => {
+                console.log("error", error)
             })
-        }).catch((err) => {
-            console.log('Upload error!', err)
-        })
-
     }
 
-    
+    //仿照postman
     // _upload(datas) {
     //     // let BaseUrl = 'http://140.115.81.238:5000/testUpload'  // 域名地址，根据自己的修改
 
     //     //let { path } = params
-        
+
+    //     // {
+    //     //     "_bodyBlob":
+    //     //     { "_data": { "__collector": [Object], "blobId": "53f28741-5303-473d-a0d0-974f027e2024", "offset": 0, "size": 192 } },
+    //     //     "_bodyInit": { "_data": { "__collector": [Object], "blobId": "53f28741-5303-473d-a0d0-974f027e2024", "offset": 0, "size": 192 } },
+    //     //     "bodyUsed": false, "headers": { "map": { "content-length": "192", "content-type": "text/html", "date": "Mon, 10 Aug 2020 15:21:06 GMT", "server": "Werkzeug/0.14.1 Python/3.6.9" } }, "ok": false, "status": 400, "statusText": undefined, "type": "default", "url": "http://140.115.81.238:5000/testUpload"
+    //     // }
     //     let formData = new FormData()
-    //    // let soundPath = datas
-    //      let soundPath = `file://${datas}`  // 注意需要增加前缀 `file://`
-    //     // let fileName = path.substring(path.lastIndexOf('/') + 1, path.length) // 文件名
-    //     let file = { uri: soundPath, type: "multipart/form-data", name:"soundPath" } // 注意 `uri` 表示文件地址，`type` 表示接口接收的类型，一般为这个，跟后端确认一下
+    //     let file = {
+    //         'value': datas,
+    //         'options': {
+    //             'filename': '/C:/Users/ruby/Downloads/錄製.aac',
+    //             'contentType': null
+    //         }
+    //     } // 注意 `uri` 表示文件地址，`type` 表示接口接收的类型，一般为这个，跟后端确认一下
     //     formData.append('file', file)
-        
-    //     const params = {
+
+    //     var options = {
     //         method: 'POST',
-    //         body: formData,
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data'
+    //         // 'url': '140.115.81.238:5000/testUpload',
+
+    //         'headers': {
+    //             'content-type': 'multipart/form-data'
     //         },
-    //         timeout: 5000 // 5s超时
+    //         // 'body': formData
+    //         'body': {
+    //             'file': {
+    //                 'value': `file://${datas}` ,
+    //                 'options': {
+    //                     'filename': '/C:/Users/ruby/Downloads/錄製.aac',
+    //                     'contentType': null
+    //                 }
+    //             }
+    //         }
     //     };
-        
-    //      fetch(`http://140.115.81.238:5000/testUpload`, params)
+
+    // let formData = new FormData()
+    // let soundPath = datas
+    // // let soundPath = `file://${datas}`  // 注意需要增加前缀 `file://`
+    // // let fileName = path.substring(path.lastIndexOf('/') + 1, path.length) // 文件名
+    // let file = {
+    //     'value': datas,
+    //     'options': {
+    //         'filename': '/C:/Users/ruby/Downloads/錄製.aac',
+    //         'contentType': null
+    //     }
+    // } // 注意 `uri` 表示文件地址，`type` 表示接口接收的类型，一般为这个，跟后端确认一下
+    // formData.append('file', file)
+
+    // const params = {
+    //     method: 'POST',
+    //     body: formData,
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //     },
+    //     timeout: 5000 // 5s超时
+    // };
+
+    //     fetch(`http://140.115.81.238:5000/testUpload`, options)
     //         // .then(response => response.json())
-    //         .then(response=>{
-    //             console.log("??")
+    //         .then(response => {
+    //             console.log(response)
+    //             //console.log(options)
     //         })
-    //         .then(data => data)
+    //         .then(data => {
+    //             console.log(data)
+    //         })
+    //         // .then(data => data)
     //         .catch(error => {
     //             console.log(error)
+    //             console.log("????")
     //             return { error_code: -3, error_msg: '请求异常，请重试' }
-                
+
     //         })
-            
+
     // }
 
     // _upload = async (params) => {
