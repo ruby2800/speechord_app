@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 
-import { Text, View, FlatList, ActivityIndicator, SafeAreaView}from 'react-native';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import {Icon,Header} from 'react-native-elements';
+import { Text, View, FlatList, ActivityIndicator, SafeAreaView } from 'react-native';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { Icon, Header } from 'react-native-elements';
+
+import App from './sound';
 // import {DrawerActions, useNavigation, NavigationContainer} from '@react-navigation/native';
 
 
@@ -20,12 +22,26 @@ export default class WordFile extends Component {
 
   async componentDidMount() {
 
-    const response = await 
-    fetch('http://140.115.81.238:5000/testGet');
-    const json = await response.json();
-    this.setState({ summ: json.summary, trans: json.transcript, isLoading:false });
 
-    
+    let formData = new FormData();
+    // let filename = datas;
+    formData.append('userName', 'testClient');
+    formData.append('fileName', 'pythontest');
+
+    const response = await fetch('http://140.115.81.199:9943/textFetch/testClient/pythontest',
+      {
+        method: 'POST',
+        // headers: {
+        //   Accept: 'application/json',
+        //   'Content-Type': 'multipart/form-data'
+        // },
+        body: formData
+      });
+    //console.log(response)
+      const json = await response.json();
+    this.setState({ summ: json.summary, trans: json.transcript, isLoading: false });
+
+
     // console.log('this.state.trans');
     // console.log(this.state.trans);
 
@@ -43,6 +59,10 @@ export default class WordFile extends Component {
     //  });
   }
 
+  // helper(please) {
+  //   console.log(please);
+  // }
+
   Transcript = () => {
     // const { isLoading } = this.state;
     // const { trans, isLoading } = this.state;
@@ -50,23 +70,23 @@ export default class WordFile extends Component {
     // console.log('TRANS');
     // console.log(this.state.trans);
     // let summ = this.state ;
-  
+
     return (
-        <SafeAreaView style={{ flex: 1, padding: 15 }}>
+      <SafeAreaView style={{ flex: 1, padding: 15 }}>
 
-            <FlatList
-              data={this.state.trans}
-              extraData={this.state}
-              keyExtractor={({ id }, index) => id}
-              renderItem={({ item }) => (
-                <View>
-                <Text style={{fontSize:15}}>{item.text}{"\n"}</Text>              
-                </View>
-              )}
-            />
+        <FlatList
+          data={this.state.trans}
+          extraData={this.state}
+          keyExtractor={({ id }, index) => id}
+          renderItem={({ item }) => (
+            <View>
+              <Text style={{ fontSize: 15 }}>{item.text}{"\n"}</Text>
+            </View>
+          )}
+        />
 
-        </SafeAreaView>
-      );
+      </SafeAreaView>
+    );
 
   }
 
@@ -77,61 +97,61 @@ export default class WordFile extends Component {
 
     // console.log('SUm');
     // console.log(this.state.data);
-  
+
     return (
-        <SafeAreaView style={{ flex: 1, padding: 15 }}>
+      <SafeAreaView style={{ flex: 1, padding: 15 }}>
 
-            <FlatList
-              data={this.state.summ}
-              extraData={this.state}
-              keyExtractor={({ id }, index) => id}
-              renderItem={({ item }) => (
-                <View>
-                <Text style={{fontSize:15}}>{item.text}{"\n"}</Text>              
-                </View>
-              )}
-            />
+        <FlatList
+          data={this.state.summ}
+          extraData={this.state}
+          keyExtractor={({ id }, index) => id}
+          renderItem={({ item }) => (
+            <View>
+              <Text style={{ fontSize: 15 }}>{item.text}{"\n"}</Text>
+            </View>
+          )}
+        />
 
-        </SafeAreaView>
-      );
+      </SafeAreaView>
+    );
   }
-  
-  render(){
+
+  render() {
     const { navigation } = this.props;
     const Tab = createMaterialBottomTabNavigator();
     const { isLoading } = this.state;
 
     //當isLoading為false時
-    if(!isLoading){
+    if (!isLoading) {
 
-    return(
-      
-        <Tab.Navigator barStyle={{backgroundColor:'#3488C0'}}>
-            <Tab.Screen 
-                  name="逐字稿" 
-                  component={this.Transcript} 
-                  options={{
-                        tabBarIcon: ({ color, size }) => (
-                          <Icon name="text-document" type="entypo" color={color} size={size} />
-                        ),
-                  }}
-            />
-            <Tab.Screen 
-                  name="摘要稿" 
-                  component={this.Summary} 
-                  options={{
-                        tabBarIcon: ({ color, size }) => (
-                          <Icon name="text" type="entypo" color={color} size={size} />
-                        ),
-                   }}
-            />
+      return (
+
+        <Tab.Navigator barStyle={{ backgroundColor: '#3488C0' }}>
+          <Tab.Screen
+            name="逐字稿"
+            component={this.Transcript}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Icon name="text-document" type="entypo" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="摘要稿"
+            component={this.Summary}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Icon name="text" type="entypo" color={color} size={size} />
+              ),
+            }}
+          />
         </Tab.Navigator>
       );
     }
-    else{
-          return(<ActivityIndicator/>);
+    else {
+      return (<ActivityIndicator />);
     }
-  }  
+  }
 }
 
 // //方法2

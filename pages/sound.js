@@ -5,11 +5,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Sound from 'react-native-sound'
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import WordFile from './wordfile';
+import WordFile,{helper} from './wordfile';
 
 let whoosh;
 
-
+// helper("sdfsd");
 export default class App extends Component {
 
 

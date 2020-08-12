@@ -102,16 +102,19 @@ export default class history extends Component {
 
 
     //沒有CONTENT TYPE
-    _upload(datas) {
+    _upload(datas, filename) {
 
+
+        //let filename = this.filenames;
+        
         let name = "testClient"
         let formData = new FormData();
-        let filename = datas;
-        formData.append('userName',name)
+        // let filename = datas;
+        formData.append('userName', name)
         // formdata.append('userName',name)
-        formData.append('file', { uri: `file://${datas}`, name: `test`, type: 'multipart/form-data' })
+        formData.append('file', { uri: `file://${datas}`, name: filename, type: 'multipart/form-data' })
         //之後要抓使用者名稱
-        
+
         fetch(`http://140.115.81.199:9943/audioUpload/${name}`,
             {
                 method: 'POST',
@@ -126,34 +129,47 @@ export default class history extends Component {
             })
             .then(result => {
                 console.log("success", result)
-                fetch(`http://140.115.81.199:9943/bucketUpload/${name}/test`,
+                fetch(`http://140.115.81.199:9943/bucketUpload/${name}/${filename}`,
                     {
                         method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'multipart/form-data'
-                        },
-                        body: formData
+                        // headers: {
+                        //     Accept: 'application/json',
+                        //     'Content-Type': 'multipart/form-data'
+                        // },
+                        // body: formData
                     })
                     .then(response => {
                         console.log(response.status);
                     })
                     .then(result => {
                         console.log("success", result)
-                        fetch(`http://140.115.81.199:9943/textDown/${name}/test`,
+                        fetch(`http://140.115.81.199:9943/textDown/${name}/${filename}`,
                             {
                                 method: 'POST',
-                                headers: {
-                                    Accept: 'application/json',
-                                    'Content-Type': 'multipart/form-data'
-                                },
-                                body: formData
+                                // headers: {
+                                //     Accept: 'application/json',
+                                //     'Content-Type': 'multipart/form-data'
+                                // },
+                                // body: formData
                             })
                             .then(response => {
                                 console.log(response.status);
                             })
                             .then(result => {
                                 console.log("success", result)
+                                fetch(`http://140.115.81.199:9943/snowDown/${name}/${filename}`,
+                                    {
+                                        method: 'POST',
+                                    })
+                                    .then(response => {
+                                        console.log(response.status);
+                                    })
+                                    .then(result => {
+                                        console.log("success", result)
+                                    })
+                                    .catch(error => {
+                                        console.log("error", error)
+                                    })
                             })
                             .catch(error => {
                                 console.log("error", error)
@@ -217,7 +233,7 @@ export default class history extends Component {
                                         rightIcon={{
                                             name: 'cloud-upload-outline',
                                             type: 'ionicon',
-                                            onPress: () => this._upload(l.path)
+                                            onPress: () => this._upload(l.path, "pythontest")
                                         }}
                                         onPress={() => navigation.navigate('播放', { url: l.path, time: 5, name: l.name })}
                                         onLongPress={() => {
