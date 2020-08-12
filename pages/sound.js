@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Sound from 'react-native-sound'
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import WordFile from './WordFile';
+import WordFile from './wordfile';
 
 let whoosh;
 

@@ -17,7 +17,7 @@ import Sound from 'react-native-sound';
 
 import recordpage from './pages/record';
 import soundpage from './pages/sound';
-import wordpage from './pages/WordFile';
+ import wordpage from './pages/wordfile';
 import historypage from './pages/history';
 import initialpage from './pages/initial';
 

@@ -34,7 +34,7 @@ export default class App extends Component {
             //audioPath: AudioUtils.DocumentDirectoryPath + 'test.aac',  // 文件路径
             //現在他上傳的時間 使用者名稱
             //要尊守規定
-            audioPath:  `/storage/emulated/0/Android/data/com.helloworld2.app/name-${year + month + day + hour + minute + second}.aac`,  // 文件路径
+            audioPath: AudioUtils.DocumentDirectoryPath+`/name-${year + month + day + hour + minute + second}.awb`,  // 文件路径
             recording: false, //是否录音
             pause: false, //录音是否暂停
             stop: false, //录音是否停止
@@ -81,14 +81,14 @@ export default class App extends Component {
      */
     prepareRecordingPath = (path) => {
         const option = {
-            SampleRate: 44100.0, //采样率
+            SampleRate: 16000, //采样率
             Channels: 1, //通道
             AudioQuality: 'High', //音质
-            AudioEncoding: 'aac', //音频编码
-            OutputFormat: 'mpeg_4', //输出格式
+            AudioEncoding: 'amr_wb', //音频编码
+            OutputFormat: 'amr_wb', //输出格式
             MeteringEnabled: false, //是否计量
             MeasurementMode: false, //测量模式
-            AudioEncodingBitRate: 32000, //音频编码比特率
+            AudioEncodingBitRate: 16000, //音频编码比特率
             IncludeBase64: true, //是否是base64格式
             AudioSource: 0, //音频源
         }
@@ -160,7 +160,7 @@ export default class App extends Component {
 
         this.setState({
 
-            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year + month + day + hour + minute + second}.aac`,  // 文件路径
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year + month + day + hour + minute + second}.awb`,  // 文件路径
             currentTime: 0, //录音时长
         })
 

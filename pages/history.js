@@ -21,13 +21,6 @@ const wait = (timeout) => {
 
 export default class history extends Component {
 
-
-
-
-    // a =this.props.route.params.reload;
-    // console.log()
-
-
     state = {
         response: [],
         refreshing: false,
@@ -58,7 +51,7 @@ export default class history extends Component {
         await RNFS.readDir(AudioUtils.DocumentDirectoryPath)
             .then((result) => {
 
-                var reg = new RegExp("^.*aac.*$");
+                var reg = new RegExp("^.*awb.*$");
 
                 let output = [];
 
@@ -111,29 +104,64 @@ export default class history extends Component {
     //沒有CONTENT TYPE
     _upload(datas) {
 
+        let name = "testClient"
         let formData = new FormData();
-        formData.append('file', { uri: `file://${datas}`, name: "test", type: 'multipart/form-data' })
-        let name="testClient"
+        let filename = datas;
+        formData.append('userName',name)
+        // formdata.append('userName',name)
+        formData.append('file', { uri: `file://${datas}`, name: `test`, type: 'multipart/form-data' })
+        //之後要抓使用者名稱
+        
         fetch(`http://140.115.81.199:9943/audioUpload/${name}`,
             {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'multipart/form-data'
-                    // 'Content-Type': 'application/json'
                 },
-                // body: JSON.stringify({
-                //     firstParam: 'yourValue',
-                //     secondParam: 'yourOtherValue'
-                //   })
                 body: formData
             })
             .then(response => {
-                 console.log(response.status);
-                //console.log("formdata" + response.formData() + "blob" + response.blob + "status" + response.status)
+                console.log(response.status);
             })
             .then(result => {
                 console.log("success", result)
+                fetch(`http://140.115.81.199:9943/bucketUpload/${name}/test`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        console.log(response.status);
+                    })
+                    .then(result => {
+                        console.log("success", result)
+                        fetch(`http://140.115.81.199:9943/textDown/${name}/test`,
+                            {
+                                method: 'POST',
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type': 'multipart/form-data'
+                                },
+                                body: formData
+                            })
+                            .then(response => {
+                                console.log(response.status);
+                            })
+                            .then(result => {
+                                console.log("success", result)
+                            })
+                            .catch(error => {
+                                console.log("error", error)
+                            })
+                    })
+                    .catch(error => {
+                        console.log("error", error)
+                    })
             })
             .catch(error => {
                 console.log("error", error)
@@ -144,7 +172,7 @@ export default class history extends Component {
     render() {
         let { response } = this.state;
         const { navigation } = this.props;
-  
+
         return (
             <View style={{ flex: 1 }} >
 
@@ -182,7 +210,6 @@ export default class history extends Component {
                                 response.map((l, i) => (
                                     <ListItem
                                         key={i}
-                                        // play-circle-filled
                                         leftIcon={{ name: 'mic' }}
                                         title={l.name}
                                         subtitle={l.subtitle}
@@ -210,7 +237,6 @@ export default class history extends Component {
                                             );
                                         }}
                                     />
-                                    // this.state.currentTime
                                 ))
                             }
                             {/* <Button title="read"
