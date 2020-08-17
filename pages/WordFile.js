@@ -31,10 +31,6 @@ export default class WordFile extends Component {
     const response = await fetch('http://140.115.81.199:9943/textFetch/testClient/pythontest',
       {
         method: 'POST',
-        // headers: {
-        //   Accept: 'application/json',
-        //   'Content-Type': 'multipart/form-data'
-        // },
         body: formData
       });
     //console.log(response)
