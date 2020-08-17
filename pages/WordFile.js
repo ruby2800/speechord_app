@@ -26,15 +26,17 @@ export default class WordFile extends Component {
     let formData = new FormData();
     // let filename = datas;
     formData.append('userName', 'testClient');
-    formData.append('fileName', 'pythontest');
+    formData.append('fileName', '202081223340');
 
-    const response = await fetch('http://140.115.81.199:9943/textFetch/testClient/pythontest',
+    const response = await fetch('http://140.115.81.199:9943/textFetch/testClient/202081223340',
       {
         method: 'POST',
         body: formData
+      }).then(response => {
+        console.log(response.status);
       });
     //console.log(response)
-      const json = await response.json();
+    const json = await response.json();
     this.setState({ summ: json.summary, trans: json.transcript, isLoading: false });
 
 

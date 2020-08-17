@@ -60,8 +60,9 @@ export default class history extends Component {
 
                     for (let i = 0; i < result.length; i++) {
 
-                        if (reg.test(result[i].name)) {
+                        if (reg.test(result[i].name)&&result[i].size>1000) {
                             console.log(result[i].name);
+                            console.log(result[i].size);
                             // console.log(result[i].path);
                             let obj = { 'name': result[i].name, 'path': result[i].path };
 
@@ -107,21 +108,21 @@ export default class history extends Component {
 
         //let filename = this.filenames;
 
-        let name = "testClient"
+        let username = "testClient"
         let formData = new FormData();
         // let filename = datas;
-        formData.append('userName', name)
+        formData.append('userName', "testClient")
         // formdata.append('userName',name)
         formData.append('file', { uri: `file://${datas}`, name: filename, type: 'multipart/form-data' })
 
         let formData2 = new FormData();
         // let filename = datas;
-        formData2.append('userName', name)
+        formData2.append('userName', "testClient")
         // formdata.append('userName',name)
         formData2.append('fileName', filename)
         //之後要抓使用者名稱
 
-        fetch(`http://140.115.81.199:9943/audioUpload/${name}`,
+        fetch(`http://140.115.81.199:9943/audioUpload/${username}`,
             {
                 method: 'POST',
                 headers: {
@@ -135,7 +136,7 @@ export default class history extends Component {
             })
             .then(result => {
                 console.log("success", result)
-                fetch(`http://140.115.81.199:9943/bucketUpload/${name}/${filename}`,
+                fetch(`http://140.115.81.199:9943/bucketUpload/${username}/${filename}`,
                     {
                         method: 'POST',
                         headers: {
@@ -149,7 +150,7 @@ export default class history extends Component {
                     })
                     .then(result => {
                         console.log("success", result)
-                        fetch(`http://140.115.81.199:9943/textDown/${name}/${filename}`,
+                        fetch(`http://140.115.81.199:9943/textDown/${username}/${filename}`,
                             {
                                 method: 'POST',
                                 headers: {
@@ -163,7 +164,7 @@ export default class history extends Component {
                             })
                             .then(result => {
                                 console.log("success", result)
-                                fetch(`http://140.115.81.199:9943/snowDown/${name}/${filename}`,
+                                fetch(`http://140.115.81.199:9943/snowDown/${username}/${filename}`,
                                     {
                                         method: 'POST',
                                         headers: {
@@ -250,7 +251,7 @@ export default class history extends Component {
                                                 }
                                                 else {
                                                     this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))
-                                                    i=-1;
+                                                    i = -1;
                                                 }
 
                                             }
