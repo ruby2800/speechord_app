@@ -20,6 +20,7 @@ import soundpage from './pages/sound';
 import wordpage from './pages/wordfile';
 import historypage from './pages/history';
 import initialpage from './pages/initial';
+import registerpage from './pages/register';
 
 import { color } from 'react-native-reanimated';
 
@@ -109,6 +110,7 @@ function MyDrawer() {
         options={{
           swipeEnabled: false,
         }} />
+      <Drawer.Screen name="註冊頁面" component={registerpage} />
       <Drawer.Screen name="歷史紀錄" component={historypage} />
       <Drawer.Screen name="錄音" component={recordpage} />
       <Drawer.Screen name="播放" component={soundpage} />
