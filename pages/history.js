@@ -8,6 +8,7 @@ import { AudioUtils } from 'react-native-audio';
 // import { ScrollView } from 'react-native-gesture-handler';
 
 import Upload from 'react-native-background-upload'
+import prompt from 'react-native-prompt-android';
 
 
 
@@ -26,7 +27,8 @@ export default class history extends Component {
         response: [],
         refreshing: false,
         startread: 0,
-        output: []
+        output: [],
+
 
     }
     _onRefresh = () => {
@@ -70,7 +72,7 @@ export default class history extends Component {
                             console.log(result[i].name);
                             console.log(result[i].size);
                             // console.log(result[i].path);
-                            let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false };
+                            let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false, 'changename': false, 'anothername': "" };
 
                             output.push(obj);
                             this.setState({ startread: (i + 1) })
@@ -100,21 +102,21 @@ export default class history extends Component {
 
                 var index;
                 //json格式要用find才能解決
-                this.state.output.find((a,i) => {
-                    if(a.path==deletepath){
-                        index=i;
+                this.state.output.find((a, i) => {
+                    if (a.path == deletepath) {
+                        index = i;
                     }
                 })
                 console.log("位置" + index);
                 console.log(deletepath)
-                
+
                 output.splice(index, 1)
-               
+
                 this.setState({
                     response: output
                 })
 
-            
+
             })
 
     }
@@ -133,6 +135,10 @@ export default class history extends Component {
                 console.log(err.message);
             })
         return res;
+    }
+
+    changeFilename(a) {
+
     }
 
 
@@ -275,7 +281,14 @@ export default class history extends Component {
                                             <ListItem
                                                 key={i}
                                                 leftIcon={{ name: 'mic' }}
-                                                title={(l.name.replace("name-", "")).replace(".awb", "")}
+                                                title={() => {
+                                                    if (!l.changename) {
+                                                        return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
+                                                    } else {
+                                                        return <Text>{l.anothername}</Text>
+                                                    }
+                                                }
+                                                }
                                                 subtitle={l.subtitle}
                                                 bottomDivider
                                                 rightIcon={{
@@ -292,7 +305,15 @@ export default class history extends Component {
                                                         }
                                                     }
                                                 }}
-                                                onPress={() => navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", "") })}
+                                                onPress={() => {
+                                                    if(l.changename){
+                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.anothername) })
+                                                    }else{
+                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.name.replace("name-", "")).replace(".awb", ""), })
+                                                    }
+                                                   
+                                                }}
+
                                                 onLongPress={() => {
 
                                                     Alert.alert(
@@ -304,7 +325,33 @@ export default class history extends Component {
                                                                 onPress: () => this.deleteFile(l.path),
                                                                 style: "cancel"
                                                             },
-                                                            { text: "沒有", onPress: () => console.log("OK Pressed") }
+                                                            { text: "沒有", onPress: () => console.log("OK Pressed") },
+                                                            {
+                                                                text: "改檔名",
+                                                                onPress: () => {
+                                                                    prompt(
+                                                                        '改檔名',
+                                                                        '輸入',
+                                                                        [
+                                                                            { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                                                                            {
+                                                                                text: '完成', onPress: n => {
+                                                                                    l.anothername = n;
+                                                                                    l.changename = true;
+                                                                                    console.log('name: ' + n)
+                                                                                    this.ReadDir();
+                                                                                }
+                                                                            },
+                                                                        ],
+                                                                        {
+
+                                                                            placeholder: (l.name.replace("name-", "")).replace(".awb", "")
+                                                                        }
+                                                                    );
+
+
+                                                                }
+                                                            },
                                                         ],
                                                         { cancelable: false }
                                                     );
@@ -324,7 +371,14 @@ export default class history extends Component {
                                                     name: 'checkmark',
                                                     type: 'ionicon',
                                                 }}
-                                                onPress={() => navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", "") })}
+                                                onPress={() => {
+                                                    if(l.changename){
+                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.anothername) })
+                                                    }else{
+                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.name.replace("name-", "")).replace(".awb", "") })
+                                                    }
+                                                   
+                                                }}
                                                 onLongPress={() => {
 
                                                     Alert.alert(
@@ -336,21 +390,34 @@ export default class history extends Component {
                                                                 onPress: () => this.deleteFile(l.path),
                                                                 style: "cancel"
                                                             },
-                                                            // {
-                                                            //     text: "編輯名字",
-                                                            //     onPress: () => {
-                                                            //         const [value, onChangeText] = React.useState((l.name.replace("name-", "")).replace(".awb", ""));
-                                                            //         alert(<TextInput
-                                                            //             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                                                            //             onChangeText={text => onChangeText(text)}
-                                                            //             value={value}
-                                                            //         />)
+
+                                                            { text: "沒有", onPress: () => console.log("OK Pressed") },
+                                                            {
+                                                                text: "改檔名",
+                                                                onPress: () => {
+                                                                    prompt(
+                                                                        '改檔名',
+                                                                        '輸入',
+                                                                        [
+                                                                            { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                                                                            {
+                                                                                text: '完成', onPress: n => {
+                                                                                    l.anothername = n;
+                                                                                    l.changename = true;
+                                                                                    console.log('name: ' + n)
+                                                                                    this.ReadDir();
+                                                                                }
+                                                                            },
+                                                                        ],
+                                                                        {
+
+                                                                            placeholder: (l.name.replace("name-", "")).replace(".awb", "")
+                                                                        }
+                                                                    );
 
 
-                                                            //     },
-                                                            //     style: "cancel"
-                                                            // },
-                                                            { text: "沒有", onPress: () => console.log("OK Pressed") }
+                                                                }
+                                                            },
                                                         ],
                                                         { cancelable: false }
                                                     );

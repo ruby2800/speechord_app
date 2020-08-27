@@ -634,7 +634,7 @@ export default class App extends React.Component {
                         }}
 
                         centerComponent={{
-                            text: this.props.route.params.name,
+                            text: this.props.route.params.showname,
                             style: {
                                 fontSize: 20,
                                 fontWeight: 'bold',
