@@ -26,9 +26,9 @@ export default class WordFile extends Component {
     let formData = new FormData();
     // let filename = datas;
     formData.append('userName', 'testClient');
-    formData.append('fileName', '202081223340');
+    formData.append('fileName', '2020818225722');
 
-    const response = await fetch('http://140.115.81.199:9943/textFetch/testClient/202081223340',
+    const response = await fetch('http://140.115.81.199:9943/textFetch/',
       {
         method: 'POST',
         body: formData

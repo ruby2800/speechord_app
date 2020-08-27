@@ -21,9 +21,12 @@ const wait = (timeout) => {
 
 export default class history extends Component {
 
+
     state = {
         response: [],
         refreshing: false,
+        startread: 0,
+        output: []
 
     }
     _onRefresh = () => {
@@ -47,29 +50,34 @@ export default class history extends Component {
 
     // 读取目录
     async ReadDir() {
-
+        let { startread, output } = this.state;
         await RNFS.readDir(AudioUtils.DocumentDirectoryPath)
             .then((result) => {
 
                 var reg = new RegExp("^.*awb.*$");
 
-                let output = [];
+                // let output = [];
 
 
                 if (result && result.length > 0) {
+                    console.log(startread);
 
-                    for (let i = 0; i < result.length; i++) {
+                    //每次只抓最新的
+                    for (let i = startread; i < result.length; i++) {
 
-                        if (reg.test(result[i].name)&&result[i].size>1000) {
+
+                        if (reg.test(result[i].name) && result[i].size > 1000) {
                             console.log(result[i].name);
                             console.log(result[i].size);
                             // console.log(result[i].path);
-                            let obj = { 'name': result[i].name, 'path': result[i].path };
+                            let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false };
 
                             output.push(obj);
+                            this.setState({ startread: (i + 1) })
                             // console.log(output[file_c].name);
 
                         }
+
                     }
                     this.setState({
                         response: output
@@ -84,6 +92,32 @@ export default class history extends Component {
 
     }
 
+    //差不多的方式可改名稱
+    async deleteReadDir(deletepath) {
+        let { startread, output } = this.state;
+        await RNFS.readDir(AudioUtils.DocumentDirectoryPath)
+            .then((result) => {
+
+                var index;
+                //json格式要用find才能解決
+                this.state.output.find((a,i) => {
+                    if(a.path==deletepath){
+                        index=i;
+                    }
+                })
+                console.log("位置" + index);
+                console.log(deletepath)
+                
+                output.splice(index, 1)
+               
+                this.setState({
+                    response: output
+                })
+
+            
+            })
+
+    }
 
     //删除文件
     async deleteFile(filePath) {
@@ -93,7 +127,7 @@ export default class history extends Component {
             .then(() => {
 
                 console.log('FILE DELETED');
-                this.ReadDir();
+                this.deleteReadDir(filePath);
             })
             .catch((err) => {
                 console.log(err.message);
@@ -105,9 +139,7 @@ export default class history extends Component {
     //沒有CONTENT TYPE
     _upload(datas, filename) {
 
-
         //let filename = this.filenames;
-
         let username = "testClient"
         let formData = new FormData();
         // let filename = datas;
@@ -122,7 +154,7 @@ export default class history extends Component {
         formData2.append('fileName', filename)
         //之後要抓使用者名稱
 
-        fetch(`http://140.115.81.199:9943/audioUpload/${username}`,
+        fetch(`http://140.115.81.199:9943/audioUpload`,
             {
                 method: 'POST',
                 headers: {
@@ -136,7 +168,7 @@ export default class history extends Component {
             })
             .then(result => {
                 console.log("success", result)
-                fetch(`http://140.115.81.199:9943/bucketUpload/${username}/${filename}`,
+                fetch(`http://140.115.81.199:9943/bucketUpload`,
                     {
                         method: 'POST',
                         headers: {
@@ -150,7 +182,7 @@ export default class history extends Component {
                     })
                     .then(result => {
                         console.log("success", result)
-                        fetch(`http://140.115.81.199:9943/textDown/${username}/${filename}`,
+                        fetch(`http://140.115.81.199:9943/textDown`,
                             {
                                 method: 'POST',
                                 headers: {
@@ -164,7 +196,7 @@ export default class history extends Component {
                             })
                             .then(result => {
                                 console.log("success", result)
-                                fetch(`http://140.115.81.199:9943/snowDown/${username}/${filename}`,
+                                fetch(`http://140.115.81.199:9943/snowDown`,
                                     {
                                         method: 'POST',
                                         headers: {
@@ -175,8 +207,10 @@ export default class history extends Component {
                                     })
                                     .then(response => {
                                         console.log(response.status);
+
                                     })
                                     .then(result => {
+                                        this.ReadDir();
                                         console.log("success", result)
                                     })
                                     .catch(error => {
@@ -235,46 +269,99 @@ export default class history extends Component {
                         {/* <ScrollView> */}
                         < View >
                             {
-                                response.map((l, i) => (
-                                    <ListItem
-                                        key={i}
-                                        leftIcon={{ name: 'mic' }}
-                                        title={(l.name.replace("name-", "")).replace(".awb", "")}
-                                        subtitle={l.subtitle}
-                                        bottomDivider
-                                        rightIcon={{
-                                            name: 'cloud-upload-outline',
-                                            type: 'ionicon',
-                                            onPress: () => {
-                                                if (i == -1) {
-                                                    alert("已上傳過了")
-                                                }
-                                                else {
-                                                    this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))
-                                                    i = -1;
-                                                }
+                                response.map((l, i) => {
+                                    if (!l.alreadyupload) {
+                                        return (
+                                            <ListItem
+                                                key={i}
+                                                leftIcon={{ name: 'mic' }}
+                                                title={(l.name.replace("name-", "")).replace(".awb", "")}
+                                                subtitle={l.subtitle}
+                                                bottomDivider
+                                                rightIcon={{
+                                                    name: 'cloud-upload-outline',
+                                                    type: 'ionicon',
+                                                    onPress: () => {
+                                                        if (!l.alreadyupload) {
+                                                            this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))
+                                                            l.alreadyupload = true;
+                                                            // alert(l.alreadyupload)
+                                                        }
+                                                        else {
+                                                            alert("bug");
+                                                        }
+                                                    }
+                                                }}
+                                                onPress={() => navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", "") })}
+                                                onLongPress={() => {
 
-                                            }
-                                        }}
-                                        onPress={() => navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", "") })}
-                                        onLongPress={() => {
+                                                    Alert.alert(
+                                                        "提醒",
+                                                        "確定要刪除嗎",
+                                                        [
+                                                            {
+                                                                text: "確定",
+                                                                onPress: () => this.deleteFile(l.path),
+                                                                style: "cancel"
+                                                            },
+                                                            { text: "沒有", onPress: () => console.log("OK Pressed") }
+                                                        ],
+                                                        { cancelable: false }
+                                                    );
+                                                }}
+                                            />
+                                        )
+                                    }
+                                    if (l.alreadyupload) {
+                                        return (
+                                            <ListItem
+                                                key={i}
+                                                leftIcon={{ name: 'mic' }}
+                                                title={(l.name.replace("name-", "")).replace(".awb", "")}
+                                                subtitle={l.subtitle}
+                                                bottomDivider
+                                                rightIcon={{
+                                                    name: 'checkmark',
+                                                    type: 'ionicon',
+                                                }}
+                                                onPress={() => navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", "") })}
+                                                onLongPress={() => {
 
-                                            Alert.alert(
-                                                "提醒",
-                                                "確定要刪除嗎",
-                                                [
-                                                    {
-                                                        text: "確定",
-                                                        onPress: () => this.deleteFile(l.path),
-                                                        style: "cancel"
-                                                    },
-                                                    { text: "沒有", onPress: () => console.log("OK Pressed") }
-                                                ],
-                                                { cancelable: false }
-                                            );
-                                        }}
-                                    />
-                                ))
+                                                    Alert.alert(
+                                                        "提醒",
+                                                        "確定要刪除嗎",
+                                                        [
+                                                            {
+                                                                text: "確定",
+                                                                onPress: () => this.deleteFile(l.path),
+                                                                style: "cancel"
+                                                            },
+                                                            // {
+                                                            //     text: "編輯名字",
+                                                            //     onPress: () => {
+                                                            //         const [value, onChangeText] = React.useState((l.name.replace("name-", "")).replace(".awb", ""));
+                                                            //         alert(<TextInput
+                                                            //             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                                            //             onChangeText={text => onChangeText(text)}
+                                                            //             value={value}
+                                                            //         />)
+
+
+                                                            //     },
+                                                            //     style: "cancel"
+                                                            // },
+                                                            { text: "沒有", onPress: () => console.log("OK Pressed") }
+                                                        ],
+                                                        { cancelable: false }
+                                                    );
+                                                }}
+                                            />
+                                        )
+                                    }
+                                }
+
+
+                                )
                             }
                             {/* <Button title="read"
                         onPress={() => this.ReadDir()} /> */}
