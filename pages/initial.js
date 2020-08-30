@@ -29,7 +29,6 @@ class Inputs extends Component {
         password: '',
         text: '',
     }
-
     handleEmail = (text) => {
         this.setState({ email: text })
     }
@@ -113,7 +112,7 @@ class Inputs extends Component {
                     centerComponent={{
                         text: '登入',
                         style: {
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: 'bold',
                             fontFamily: 'Fonts.Lato',
                             color: 'white'
@@ -201,7 +200,9 @@ export default Inputs
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 23
+        // paddingTop: 23
+        // paddingTop:15,
+        
     },
     input: {
         margin: 15,

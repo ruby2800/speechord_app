@@ -28,6 +28,7 @@ export default class history extends Component {
         refreshing: false,
         startread: 0,
         output: [],
+        totalupload: false
 
 
     }
@@ -53,6 +54,7 @@ export default class history extends Component {
     // 读取目录
     async ReadDir() {
         let { startread, output } = this.state;
+        console.log(this.props.route.params.user);
         await RNFS.readDir(AudioUtils.DocumentDirectoryPath)
             .then((result) => {
 
@@ -145,6 +147,9 @@ export default class history extends Component {
     //沒有CONTENT TYPE
     _upload(datas, filename) {
 
+        let { totalupload } = this.state;
+        let test=false;
+
         //let filename = this.filenames;
         let username = "testClient"
         let formData = new FormData();
@@ -199,6 +204,7 @@ export default class history extends Component {
                             })
                             .then(response => {
                                 console.log(response.status);
+
                             })
                             .then(result => {
                                 console.log("success", result)
@@ -212,12 +218,19 @@ export default class history extends Component {
                                         body: formData2
                                     })
                                     .then(response => {
+                                        //必須在這判斷
                                         console.log(response.status);
+                                        if (response.status == 200) {
+
+                                            test=!false;
+                                           // console.log("inside" + test)
+                                            return test;
+                                        }
 
                                     })
                                     .then(result => {
                                         this.ReadDir();
-                                        console.log("success", result)
+                                        console.log("successsf", result)
                                     })
                                     .catch(error => {
                                         console.log("error", error)
@@ -234,11 +247,13 @@ export default class history extends Component {
             .catch(error => {
                 console.log("error", error)
             })
+            //console.log(test)
+           
     }
 
 
     render() {
-        let { response } = this.state;
+        let { response, totalupload } = this.state;
         const { navigation } = this.props;
 
         return (
@@ -296,22 +311,28 @@ export default class history extends Component {
                                                     type: 'ionicon',
                                                     onPress: () => {
                                                         if (!l.alreadyupload) {
-                                                            this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))
-                                                            l.alreadyupload = true;
-                                                            // alert(l.alreadyupload)
+                                                            
+                                                            
+                                                            if( this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))){
+                                                                consoel.log("gan")
+                                                                l.alreadyupload=true;
+                                                            }
+                                                            l.alreadyupload=true;
+                                                        
                                                         }
                                                         else {
                                                             alert("bug");
                                                         }
+
                                                     }
                                                 }}
                                                 onPress={() => {
-                                                    if(l.changename){
-                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.anothername) })
-                                                    }else{
-                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.name.replace("name-", "")).replace(".awb", ""), })
+                                                    if (l.changename) {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                    } else {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
-                                                   
+
                                                 }}
 
                                                 onLongPress={() => {
@@ -364,7 +385,14 @@ export default class history extends Component {
                                             <ListItem
                                                 key={i}
                                                 leftIcon={{ name: 'mic' }}
-                                                title={(l.name.replace("name-", "")).replace(".awb", "")}
+                                                title={() => {
+                                                    if (!l.changename) {
+                                                        return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
+                                                    } else {
+                                                        return <Text>{l.anothername}</Text>
+                                                    }
+                                                }
+                                                }
                                                 subtitle={l.subtitle}
                                                 bottomDivider
                                                 rightIcon={{
@@ -372,12 +400,12 @@ export default class history extends Component {
                                                     type: 'ionicon',
                                                 }}
                                                 onPress={() => {
-                                                    if(l.changename){
-                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.anothername) })
-                                                    }else{
-                                                        navigation.navigate('播放', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""),showname:(l.name.replace("name-", "")).replace(".awb", "") })
+                                                    if (l.changename) {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                    } else {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
-                                                   
+
                                                 }}
                                                 onLongPress={() => {
 

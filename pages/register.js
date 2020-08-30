@@ -1,14 +1,16 @@
-import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet} from 'react-native'
+import React, { Component, Fragment }from 'react'
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet} from 'react-native'
 import { Header } from 'react-native-elements';
-import { CheckBox } from 'react-native-elements'
+// import { CheckBox } from 'react-native-elements'
 import { Input,Icon } from 'react-native-elements';
 import { Button } from 'react-native-elements';
-//import Overlay from 'react-native-modal-overlay';
+import Overlay from 'react-native-modal-overlay';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { sha256 } from 'react-native-sha256';
+// import { useState } from 'react';
 
-class Inputs extends React.Component {
+class Inputs extends Component {
+   //React.Component
    constructor(props) {
  
       super(props)
@@ -19,46 +21,11 @@ class Inputs extends React.Component {
         TextInputPassword: '',
         //inputText: '',
         text: '',
+        response: [],
       }
    
     }
-   /*state = {
-      email: '',
-      password: '',
-   }
-   handleEmail = (text) => {
-      this.setState({ email: text })
-   }
-   handlePassword = (text) => {
-      this.setState({ password: text })
-   }*/
-
    
-   /*async componentDidMount(){
-      const { TextInputEmail }  = this.state ;
-      const { TextInputPassword }  = this.state ;
-
-      let formData = new formData();
-      formData.append('Email',TextInputEmail);
-      formData.append('Password',TextInputPassword);
-      //formData.append('Email','myemail@gmail.com');
-      //formData.append('Password','mypassword');
-      try{
-         await fetch('http://140.115.81.199:9943/signUp',
-         {
-            method: 'POST',
-            //mode: 'no-cors',
-            headers:{
-               'Accept': 'application/json',
-               'Content-Type': 'multipart/form-data',
-            },
-            body: formData
-         })
-      }catch(e){
-         console.log(e);
-      }
-
-   }*/
    uploadData(){
       const { TextInputEmail }  = this.state ;
       //const { TextInputPassword }  = this.state ;
@@ -86,6 +53,15 @@ class Inputs extends React.Component {
       .catch(error => {
          console.log("error", error)
       })
+
+      // const { navigation } = this.props;
+      // navigation.navigate('歷史紀錄');
+
+      //副頁面傳遞參數給history
+      this.props.navigation.navigate('歷史紀錄',{
+         user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
+     })
+    // const { username } = (result['Email'].replace("@gmail.com", " "));
    }
 
   convertSHA(){
@@ -140,16 +116,25 @@ class Inputs extends React.Component {
        }
       
 
-   state = {
-      modalVisible: true, 
-    }
+      state = {
+         modalVisible: true,
+      }
+ 
+      onClose = () => this.setState({ modalVisible: false });
 
-   onClose = () => this.setState({ modalVisible: false});
-    
    render() {
 
       return (
          <View style = {styles.container}>
+
+            <Overlay transparent={true} visible={this.state.modalVisible} onClose={this.onClose} closeOnTouchOutside>
+               <Icon
+                  name='book-open'
+                  type='feather'
+                  color='black' />
+               <Text h4>Instructions</Text>
+
+            </Overlay>
 
             <Header
                leftComponent={{ icon: 'menu', color: '#fff' }}
@@ -200,7 +185,7 @@ class Inputs extends React.Component {
                errorMessage='AT LEAST 6 WORDS OR NUMBERS '
             />
           
-           <CheckBox
+           {/* <CheckBox
                title='商務會議'
                checkedIcon='dot-circle-o'
                uncheckedIcon='circle-o'
@@ -211,25 +196,25 @@ class Inputs extends React.Component {
                checkedIcon='dot-circle-o'
                uncheckedIcon='circle-o'
                checked={this.state.checked}
-               onPress={() => this.setState({checked: !this.state.checked})}/>
-
+               onPress={() => this.setState({checked: !this.state.checked})}/> */}
+{/* 
             <TouchableOpacity
                style = {styles.submitButton}
                onPress = {
                   //() => this.register(this.state.email, this.state.password)
                   this.InsertDataToServer}>
                <Text style = {styles.submitButtonText}>送出註冊資料</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             
             <TouchableOpacity
                style = {styles.submitButton}
-               onPress={()=> this.uploadData()}
-               >
-               <Text style = {styles.submitButtonText}>測試post</Text>
+               onPress={()=> this.uploadData()}>
+
+               <Text style = {styles.submitButtonText}>SUBMIT AND ENTER SPEECHORD </Text>
             </TouchableOpacity>
             
-            <Text>'Please insert any value to convert in SHA 256'</Text>
+            {/* <Text>'Please insert any value to convert in SHA 256'</Text> */}
             <TouchableOpacity
                style={styles.button}
                title="Conver sh5"
@@ -239,6 +224,10 @@ class Inputs extends React.Component {
                   <Text>Conver to SHA 256</Text>
             </TouchableOpacity>
             <Text style={styles.textStyle}>{this.state.text}</Text>
+            {/* <Image
+               style={styles.tinyLogo}
+               source={require('./Common.jpg')}
+            /> */}
             
          </View>
       )
@@ -258,16 +247,18 @@ const styles = StyleSheet.create({
       borderWidth: 1
    },
    submitButton: {
-      backgroundColor: '#7a42f4',
+      backgroundColor: 'darkblue',
       padding: 10,
       alignItems:'center',
       margin: 15,
       height: 40,
    },
    submitButtonText:{
-      color: 'white'
-   }
+      color: 'white',
+      fontSize: 15,
+   },
 })
+
 
 //To-do list: 
 //第一頁email,pw alert(可參照input下面的style explanation)
