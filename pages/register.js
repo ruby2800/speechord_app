@@ -1,5 +1,5 @@
 import React, { Component, Fragment }from 'react'
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet} from 'react-native'
+import { View, Alert, Text, TouchableOpacity, TextInput, Image, StyleSheet} from 'react-native'
 import { Header } from 'react-native-elements';
 // import { CheckBox } from 'react-native-elements'
 import { Input,Icon } from 'react-native-elements';
@@ -27,41 +27,84 @@ class Inputs extends Component {
     }
    
    uploadData(){
-      const { TextInputEmail }  = this.state ;
-      //const { TextInputPassword }  = this.state ;
-      const{ text } = this.state ;
+      // const { TextInputEmail }  = this.state ;
+      // //const { TextInputPassword }  = this.state ;
+      // const{ text } = this.state ;
 
-      let formData = new FormData();
-      formData.append('Email', TextInputEmail);
-      //formData.append('Password', TextInputPassword);
-      formData.append('Password', text);
-      fetch(`http://140.115.81.199:9943/signUp`,
-      {
-         method: 'POST',
-         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data',
-         },
-         body: formData
-      })
-      .then(response => {
-         console.log(response.status);
-      })
-      .then(result => {
-         console.log("success", result)
-      })
-      .catch(error => {
-         console.log("error", error)
-      })
+      if (this.state.TextInputEmail != null && this.state.TextInputEmail != "") {
+         if (this.state.TextInputPassword != null && this.state.TextInputPassword != "") {
 
-      // const { navigation } = this.props;
-      // navigation.navigate('歷史紀錄');
+            const { TextInputEmail }  = this.state ;
+            const{ text } = this.state ;
+            
+            let formData = new FormData();
+            formData.append('Email', TextInputEmail);
+            formData.append('Password', text);
+            fetch(`http://140.115.81.199:9943/signUp`,
+            {
+               method: 'POST',
+               headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'multipart/form-data',
+            },
+               body: formData
+            })
+            .then(response => {
+               console.log(response.status);
+            })
+            .then(result => {
+               console.log("success", result)
+            })
+            .catch(error => {
+               console.log("error", error)
+            })
+            //副頁面傳遞參數給history
+            this.props.navigation.navigate('歷史紀錄',{
+               user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
+            })
+   
+        } else {
+            Alert.alert("密碼不能為空");
+         }
 
-      //副頁面傳遞參數給history
-      this.props.navigation.navigate('歷史紀錄',{
-         user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
-     })
-    // const { username } = (result['Email'].replace("@gmail.com", " "));
+      } else {
+         Alert.alert("帳號不能為空");
+      }
+      
+   //    const { TextInputEmail }  = this.state ;
+   //     //const { TextInputPassword }  = this.state ;
+   //    const{ text } = this.state ;
+   //    let formData = new FormData();
+   //    formData.append('Email', TextInputEmail);
+   //    //formData.append('Password', TextInputPassword);
+   //    formData.append('Password', text);
+   //    fetch(`http://140.115.81.199:9943/signUp`,
+   //    {
+   //       method: 'POST',
+   //       headers: {
+   //          'Accept': 'application/json',
+   //          'Content-Type': 'multipart/form-data',
+   //       },
+   //       body: formData
+   //    })
+   //    .then(response => {
+   //       console.log(response.status);
+   //    })
+   //    .then(result => {
+   //       console.log("success", result)
+   //    })
+   //    .catch(error => {
+   //       console.log("error", error)
+   //    })
+
+   //    // const { navigation } = this.props;
+   //    // navigation.navigate('歷史紀錄');
+
+   //    //副頁面傳遞參數給history
+   //    this.props.navigation.navigate('歷史紀錄',{
+   //       user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
+   //   })
+   //  // const { username } = (result['Email'].replace("@gmail.com", " "));
    }
 
   convertSHA(){
@@ -127,14 +170,14 @@ class Inputs extends Component {
       return (
          <View style = {styles.container}>
 
-            <Overlay transparent={true} visible={this.state.modalVisible} onClose={this.onClose} closeOnTouchOutside>
+            {/* <Overlay transparent={true} visible={this.state.modalVisible} onClose={this.onClose} closeOnTouchOutside>
                <Icon
                   name='book-open'
                   type='feather'
                   color='black' />
                <Text h4>Instructions</Text>
 
-            </Overlay>
+            </Overlay> */}
 
             <Header
                leftComponent={{ icon: 'menu', color: '#fff' }}

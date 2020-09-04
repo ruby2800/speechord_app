@@ -34,7 +34,7 @@ export default class App extends Component {
             //audioPath: AudioUtils.DocumentDirectoryPath + 'test.aac',  // 文件路径
             //現在他上傳的時間 使用者名稱
             //要尊守規定
-            audioPath: AudioUtils.DocumentDirectoryPath+`/name-${year}-${month}-${day}_${hour + minute + second}.awb`,  // 文件路径
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year}-${month}-${day}_${hour + minute + second}.awb`,  // 文件路径
             recording: false, //是否录音
             pause: false, //录音是否暂停
             stop: false, //录音是否停止
@@ -144,7 +144,7 @@ export default class App extends Component {
         }
     }
 
-//重新整裡
+    //重新整裡
 
     forceRemount() {
         console.log("reload");
@@ -175,7 +175,7 @@ export default class App extends Component {
             return alert('未錄音')
         }
         try {
-            
+
 
             await AudioRecorder.stopRecording();
             this.forceRemount();
@@ -184,7 +184,7 @@ export default class App extends Component {
 
             // this._upload;
 
-            navigation.navigate('歷史紀錄', { url: this.state.audioPath, reload:0 });
+            navigation.navigate('歷史紀錄', { url: this.state.audioPath, reload: 0 });
 
         } catch (error) {
             console.log("停止");
@@ -196,9 +196,17 @@ export default class App extends Component {
     render() {
         let { recording, pause, resume, stop, currentTime } = this.state;
         const { navigation } = this.props;
-        
+
+        currentTime = Math.ceil(currentTime);
+        let totalHour = parseInt(currentTime / 3600);
+        let totalMin = parseInt(currentTime / 60); //总分钟数
+        let totalSec = currentTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
+        totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
+        totalMin = totalMin > 9 ? totalMin : '0' + totalMin;
+        totalHour = totalHour > 9 ? totalHour : '0' + totalHour;
+
         // if( this.props.route.params.record==0){
-            
+
         //     this._record;
         //     console.log(this.props.route.params.record)
         // }
@@ -236,7 +244,7 @@ export default class App extends Component {
                     <View style={{ flex: 2, justifyContent: 'space-around', alignItems: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             <Icon name='mic' type='material' color='red' />
-                            <Text style={styles.text}>時間長: {currentTime}</Text>
+                            <Text style={{ fontSize: 40, fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>{totalHour}:{totalMin}:{totalSec}</Text>
                         </View>
 
 

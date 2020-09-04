@@ -31,7 +31,10 @@ export default class App extends React.Component {
             summ_data: [],
             trans: [],
             trans_data: [],
-            isLoading: true,
+            TextInputDisableHolder:false,
+            // inputScrollView:false,
+            textTrans:'',
+            textSumm:'',
             // hasPermission: undefined,
             index: 0,
             routes: [
@@ -39,9 +42,9 @@ export default class App extends React.Component {
                 { key: 'summ', title: 'Summary', icon: 'text-short', color: '#296C99' },
             ],
             response: [],
-            numberOfsummary: '',
+            numberOfsummary: '5',
             text: '',
-            OldnumberOfsummary: '5',
+            // OldnumberOfsummary: '5',
         };
     }
 
@@ -76,7 +79,7 @@ export default class App extends React.Component {
         formData.append('userName', 'testClient');
         formData.append('fileName', this.props.route.params.name);
 
-        const response = fetch('http://140.115.81.199:9943/textFetch/5',
+        const response = fetch(`http://140.115.81.199:9943/textFetch`,
             {
                 method: 'POST',
                 // headers: {
@@ -160,6 +163,9 @@ export default class App extends React.Component {
             summ_data: [],
             trans: [],
             trans_data: [],
+            TransInputDisableHolder:false,
+            textTrans:'',
+            textSumm:'',
             isLoading: true,
             // hasPermission: undefined,
             index: 0,
@@ -168,7 +174,7 @@ export default class App extends React.Component {
                 { key: 'summ', title: 'Summary', icon: 'text-short', color: '#296C99' },
             ],
             response: [],
-            numberOfsummary: '',
+            numberOfsummary: '5',
             text: '',
         })
         clearInterval(this.time);
@@ -266,6 +272,118 @@ export default class App extends React.Component {
         })
     }
 
+    onChangedTrans(text) {
+        let newText = '';
+        // let numbers = '0123456789';
+
+        for (var i = 0; i < text.length; i++) {
+        //     if (numbers.indexOf(text[i]) > -1) {
+                newText = newText + text[i];
+            }
+        //     else {
+        //         // your call back function
+        //         alert("please enter numbers only");
+        //     }
+        // }
+        this.setState({ textTrans: newText });
+    }
+
+    editTrans = () => {
+        this.setState({ TransInputDisableHolder: true }) 
+    }
+
+    saveTrans = (textTrans) => {
+        console.log('Pressed save edit')
+        console.log(textTrans)
+        this.setState({TransInputDisableHolder:false})
+        
+
+        // this.setState({ refreshing: true });
+        // // this.setState({ OldnumberOfsummary: numberOfsummary });
+        // console.log(this.state.numberOfsummary);
+
+        let formData = new FormData();
+        // let filename = datas;
+        formData.append('userName', 'testClient');
+        formData.append('fileName', this.props.route.params.name);
+        formData.append('modCont', this.state.textTrans);
+
+        fetch(`http://140.115.81.199:9943/transUpdate`,
+        {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'multipart/form-data'
+            },
+            body: formData
+        })
+        .then(response => {
+            console.log("1"+response.status);
+        })
+        .catch(error => {
+            console.log("error", error)
+        })
+        this.setState({
+            summ: [],
+            summ_data: [],
+            trans: [],
+            trans_data: [],
+            isLoading: true,
+            // hasPermission: undefined,
+            // index: 0,
+            routes: [
+                { key: 'trans', title: 'Transcript', icon: 'text-to-speech', color: '#5C9FCC' },
+                { key: 'summ', title: 'Summary', icon: 'text-short', color: '#296C99' },
+            ],
+            response: [],
+        })
+        this.componentDidMount()
+            .then(() => {
+                this.setState({ refreshing: false });
+            });
+        this.wait(5000).then(() => {
+            this.setState({ refreshing: false });
+            //Alert message
+        });
+    }
+
+    trans_download = () => {
+        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE)
+        // create a path you want to write to
+        // :warning: on iOS, you cannot write into `RNFS.MainBundlePath`,
+        // but `RNFS.DocumentDirectoryPath` exists on both platforms and is writable
+        var date = new Date().getDate(); //To get the Current Date
+        var month = new Date().getMonth() + 1; //To get the Current Month
+        var year = new Date().getFullYear(); //To get the Current Year
+        var hours = new Date().getHours(); //To get the Current Hours
+        var min = new Date().getMinutes(); //To get the Current Minutes
+
+        var path = RNFS.DownloadDirectoryPath + `/trans${this.props.route.params.name}_${year}${month}${date}_${hours}${min}.txt`;
+        console.log(path);
+        // write the file
+        RNFS.writeFile(path, this.state.trans_data, 'utf8')
+            // RNFS.writeFile(path, this.state.tran, 'utf8')
+            .then((success) => {
+                Alert.alert(
+                    "Download File",
+                    "Success!",
+                    [
+                        // {
+                        //   text: "Cancel",
+                        //   onPress: () => console.log("Cancel Pressed"),
+                        //   style: "cancel"
+                        // },
+                        { text: "OK", onPress: () => console.log("OK Pressed") }
+                    ],
+                    { cancelable: false }
+                );
+                console.log('FILE WRITTEN!');
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }
+
     Transcript = () => {
         const [state, setState] = React.useState({ open: false });
         const onStateChange = ({ open }) => setState({ open });
@@ -273,9 +391,19 @@ export default class App extends React.Component {
 
         return (
             <SafeAreaView style={{ flex: 1, padding: 15, paddingBottom: 50 }}>
-                <View>
-                    <Text style={{ fontSize: 16 }}>{this.state.trans_data}{"\n"}</Text>
-                </View>
+                <ScrollView>
+                    <TextInput style={{ fontSize: 16, color:"black"}}
+                        onChangeText={text=> this.onChangedTrans(text)}
+                        multiline={true} 
+                        // scrollEnabled={this.state.inputScrollView}
+                        // underlineColorAndroid='transparent' 
+                        // placeholder={this.state.trans_data+"\n"}
+                        // onChangeText={(text) => this.saveTrans(text)} 
+                        editable={this.state.TextInputDisableHolder}                                            
+                    >
+                        {this.state.trans_data+"\n"}
+                    </TextInput>
+                </ScrollView>
 
                 {/* <FlatList
                     data={this.state.trans}
@@ -300,7 +428,7 @@ export default class App extends React.Component {
                                 {
                                     icon: 'format-title',
                                     label: 'Edit Text',
-                                    onPress: () => this.EditText(),
+                                    onPress: () => this.editTrans(),
                                 },
                                 // {
                                 //   icon: 'format-color-highlight',
@@ -310,7 +438,7 @@ export default class App extends React.Component {
                                 {
                                     icon: 'content-save-edit',
                                     label: 'Save Edit',
-                                    onPress: () => console.log('Pressed save edit'),
+                                    onPress: () => this.saveTrans(this.state.textTrans),
                                 },
                                 {
                                     icon: 'download',
@@ -384,20 +512,30 @@ export default class App extends React.Component {
 
         return (
             <SafeAreaView style={{ flex: 1, padding: 15, paddingBottom: 50 }}>
-                < ScrollView refreshControl={
+                {/* < ScrollView refreshControl={
                     < RefreshControl
                         refreshing={this.state.refreshing}
                         onRefresh={this._onRefresh}
                     />}
-                >
+                > */}
 
                     <Text style={{ textAlign: "center", color: 'grey', paddingBottom: 10 }}>** 可在右下功能鍵中自由設定摘要句數</Text>
 
-                    <View>
-                        <Text style={{ fontSize: 16 }}>{this.state.summ_data}{"\n"}</Text>
-                    </View>
-
+                <ScrollView>
+                    <TextInput style={{ fontSize: 16, color:"black"}}
+                        onChangeText={text=> this.onChangedSumm(text)}
+                        multiline={true} 
+                        // scrollEnabled={this.state.inputScrollView}
+                        // underlineColorAndroid='transparent' 
+                        // placeholder={this.state.trans_data+"\n"}
+                        // onChangeText={(text) => this.saveTrans(text)} 
+                        editable={this.state.TextInputDisableHolder}                                            
+                    >
+                        {this.state.summ_data+"\n"}
+                    </TextInput>
                 </ScrollView>
+
+                {/* </ScrollView> */}
                 {/* <FlatList
                     data={this.state.summ}
                     extraData={state}
@@ -426,7 +564,7 @@ export default class App extends React.Component {
                                     //   icon: 'format-title',
                                     icon: 'format-title',
                                     label: 'Edit Text',
-                                    onPress: () => this.EditText(),
+                                    onPress: () => this.editSumm(),
                                 },
                                 // {
                                 //   icon: 'format-color-highlight',
@@ -436,7 +574,7 @@ export default class App extends React.Component {
                                 {
                                     icon: 'content-save-edit',
                                     label: 'Save Edit',
-                                    onPress: () => console.log('Pressed save ssedit'),
+                                    onPress: () => this.saveSumm(this.state.textSumm),
                                 },
                                 {
                                     icon: 'download',
@@ -467,7 +605,7 @@ export default class App extends React.Component {
                                     keyboardType='numeric'
                                     style={{ height: 40, width: 130, backgroundColor: 'lightgray', marginBottom: 15, paddingHorizontal: 10 }}
                                     onChangeText={(text) => this.onChanged(text)}
-                                    placeholder={this.state.OldnumberOfsummary}
+                                    placeholder={this.state.numberOfsummary}
                                     maxLength={100}  //setting limit of input
                                 />
                                 <View style={{ flexDirection: 'row' }}>
@@ -517,79 +655,127 @@ export default class App extends React.Component {
 
     getNumofSummary = (numberOfsummary) => {
 
-        this.setState({ OldnumberOfsummary: numberOfsummary });
-        console.log(numberOfsummary);
+        this.setState({ refreshing: true });
+        // this.setState({ OldnumberOfsummary: numberOfsummary });
+        console.log(this.state.numberOfsummary);
 
         let formData = new FormData();
         // let filename = datas;
         formData.append('userName', 'testClient');
         formData.append('fileName', this.props.route.params.name);
 
-        const response = fetch(`http://140.115.81.199:9943/sumSet/${numberOfsummary}`,
-            {
-                method: 'POST',
-                // headers: {
-                //   Accept: 'application/json',
-                //   'Content-Type': 'multipart/form-data'
-                // },
-                body: formData
-            }).then(response => {
-                console.log(response.status);
-            })
-            .then((resp) => { return resp.json() })
-            .then((json) => {
-                console.log(json)
-
-                //Summary
-                const summSTR = JSON.stringify(json.summary);
-                const summData = summSTR.slice(1, -1);
-                this.setState({ summ: json.summary, summ_data: summData });
-
+        fetch(`http://140.115.81.199:9943/sumSet/${numberOfsummary}`,
+        {
+            method: 'POST',
+            // headers: {
+            //     Accept: 'application/json',
+            //     'Content-Type': 'multipart/form-data'
+            // },
+            body: formData
+        })
+        .then(response => {
+            console.log("1"+response.status);
+        })
+        .catch(error => {
+            console.log("error", error)
+        })
+        this.setState({
+            summ: [],
+            summ_data: [],
+            trans: [],
+            trans_data: [],
+            isLoading: true,
+            // hasPermission: undefined,
+            // index: 0,
+            routes: [
+                { key: 'trans', title: 'Transcript', icon: 'text-to-speech', color: '#5C9FCC' },
+                { key: 'summ', title: 'Summary', icon: 'text-short', color: '#296C99' },
+            ],
+            response: [],
+        })
+        this.componentDidMount()
+            .then(() => {
+                this.setState({ refreshing: false });
             });
-
+        this.wait(5000).then(() => {
+            this.setState({ refreshing: false });
+            //Alert message
+        });
     }
 
-    EditText = () => {
-        console.log('Pressed edit')
+    onChangedSumm(text) {
+        let newText = '';
+        // let numbers = '0123456789';
+
+        for (var i = 0; i < text.length; i++) {
+        //     if (numbers.indexOf(text[i]) > -1) {
+                newText = newText + text[i];
+            }
+        //     else {
+        //         // your call back function
+        //         alert("please enter numbers only");
+        //     }
+        // }
+        this.setState({ textSumm: newText });
     }
+    editSumm = () => {
+        this.setState({ TextInputDisableHolder: true }) 
+    }
+    saveSumm = (textSumm) => {
+        console.log('Pressed save edit')
+        console.log(textSumm)
+        this.setState({TextInputDisableHolder:false})
+        
 
-    trans_download = () => {
-        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE)
-        // create a path you want to write to
-        // :warning: on iOS, you cannot write into `RNFS.MainBundlePath`,
-        // but `RNFS.DocumentDirectoryPath` exists on both platforms and is writable
-        var date = new Date().getDate(); //To get the Current Date
-        var month = new Date().getMonth() + 1; //To get the Current Month
-        var year = new Date().getFullYear(); //To get the Current Year
-        var hours = new Date().getHours(); //To get the Current Hours
-        var min = new Date().getMinutes(); //To get the Current Minutes
+        // this.setState({ refreshing: true });
+        // // this.setState({ OldnumberOfsummary: numberOfsummary });
+        // console.log(this.state.numberOfsummary);
 
-        var path = RNFS.DownloadDirectoryPath + `/trans${this.props.route.params.name}_${year}${month}${date}_${hours}${min}.txt`;
-        console.log(path);
-        // write the file
-        RNFS.writeFile(path, this.state.trans_data, 'utf8')
-            // RNFS.writeFile(path, this.state.tran, 'utf8')
-            .then((success) => {
-                Alert.alert(
-                    "Download File",
-                    "Success!",
-                    [
-                        // {
-                        //   text: "Cancel",
-                        //   onPress: () => console.log("Cancel Pressed"),
-                        //   style: "cancel"
-                        // },
-                        { text: "OK", onPress: () => console.log("OK Pressed") }
-                    ],
-                    { cancelable: false }
-                );
-                console.log('FILE WRITTEN!');
-            })
-            .catch((err) => {
-                console.log(err.message);
+        let formData = new FormData();
+        // let filename = datas;
+        formData.append('userName', 'testClient');
+        formData.append('fileName', this.props.route.params.name);
+        formData.append('modCont', this.state.textSumm);
+
+        fetch(`http://140.115.81.199:9943/summUpdate`,
+        {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'multipart/form-data'
+            },
+            body: formData
+        })
+        .then(response => {
+            console.log("1"+response.status);
+        })
+        .catch(error => {
+            console.log("error", error)
+        })
+        this.setState({
+            summ: [],
+            summ_data: [],
+            trans: [],
+            trans_data: [],
+            isLoading: true,
+            // hasPermission: undefined,
+            // index: 0,
+            routes: [
+                { key: 'trans', title: 'Transcript', icon: 'text-to-speech', color: '#5C9FCC' },
+                { key: 'summ', title: 'Summary', icon: 'text-short', color: '#296C99' },
+            ],
+            response: [],
+        })
+        this.componentDidMount()
+            .then(() => {
+                this.setState({ refreshing: false });
             });
+        this.wait(5000).then(() => {
+            this.setState({ refreshing: false });
+            //Alert message
+        });
     }
-
+ 
     summ_download = () => {
         PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE)
         // create a path you want to write to
@@ -665,7 +851,7 @@ export default class App extends React.Component {
 
 
 
-        if (this.props.route.params.l) {
+        // if (this.props.route.params.l) {
             if (!this.state.isLoading) {
 
                 return (
@@ -759,7 +945,7 @@ export default class App extends React.Component {
                                 }}
 
                                 centerComponent={{
-                                    text: this.props.route.params.name,
+                                    text: this.props.route.params.showname,
                                     style: {
                                         fontSize: 22,
                                         fontWeight: 'bold',
@@ -822,81 +1008,81 @@ export default class App extends React.Component {
                     </ ScrollView>
                 );
             }
-        }
-        else {
-            return (
-                < ScrollView
-                // refreshControl={
-                //     < RefreshControl
-                //         refreshing={this.state.refreshing}
-                //         onRefresh={this._onRefresh}
-                //     />}
-                >
-                    <View style={{ flex: 1 }}>
-                        <Header
-                            placement="left"
-                            backgroundColor='transparent'
-                            containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
-                            leftComponent={{
-                                icon: 'close', color: '#fff', underlayColor: '#3488C0', size: 30,
-                                onPress: () => this.backAction()
-                            }}
+        // }
+        // else {
+        //     return (
+        //         < ScrollView
+        //         refreshControl={
+        //             < RefreshControl
+        //                 refreshing={this.state.refreshing}
+        //                 onRefresh={this._onRefresh()}
+        //             />}
+        //         >
+        //             <View style={{ flex: 1 }}>
+        //                 <Header
+        //                     placement="left"
+        //                     backgroundColor='transparent'
+        //                     containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
+        //                     leftComponent={{
+        //                         icon: 'close', color: '#fff', underlayColor: '#3488C0', size: 30,
+        //                         onPress: () => this.backAction()
+        //                     }}
 
-                            centerComponent={{
-                                text: this.props.route.params.showname,
-                                style: {
-                                    fontSize: 22,
-                                    fontWeight: 'bold',
-                                    fontFamily: 'Fonts.Lato',
-                                    color: 'white'
-                                }
-                            }}
-                        // rightComponent={{ icon: 'export', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
-                        />
+        //                     centerComponent={{
+        //                         text: this.props.route.params.showname,
+        //                         style: {
+        //                             fontSize: 22,
+        //                             fontWeight: 'bold',
+        //                             fontFamily: 'Fonts.Lato',
+        //                             color: 'white'
+        //                         }
+        //                     }}
+        //                 // rightComponent={{ icon: 'export', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
+        //                 />
 
-                        <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around' }}>
-                            {/* time&icon */}
-                            <View style={{ flex: 1, paddingTop: 10, marginHorizontal: 30, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                                <View>
-                                    <Text style={{ fontSize: 18 }}>{time.nowMin}:{time.nowSec}/{time.totalMin}:{time.totalSec}</Text>
-                                </View>
-                                {/* play&pause icon */}
-                                <View>
-                                    {
-                                        play ?
-                                            <Icon name='controller-paus' type='entypo' size={25} color="black" onPress={this._pause} />
-                                            :
-                                            <Icon name='controller-play' type='entypo' size={30} color="black" onPress={this._play} />
-                                    }
-                                </View>
-                            </View>
-                            {/* Slider */}
-                            <View style={{ flex: 1, paddingHorizontal: 10, justifyContent: 'space-around' }}>
-                                <Slider
-                                    // disabled //禁止滑动
-                                    maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
-                                    minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
-                                    maximumValue={this.state.maximumValue} //滑块最大值
-                                    minimumValue={0} //滑块最小值
-                                    value={this.state.seconds}
-                                    onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
-                                        value = parseInt(value);
-                                        this._getNowTime(value)
-                                        // 设置播放时间
-                                        whoosh.setCurrentTime(value);
-                                    }} />
-                            </View>
-                        </View>
+        //                 <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around' }}>
+        //                     {/* time&icon */}
+        //                     <View style={{ flex: 1, paddingTop: 10, marginHorizontal: 30, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+        //                         <View>
+        //                             <Text style={{ fontSize: 18 }}>{time.nowMin}:{time.nowSec}/{time.totalMin}:{time.totalSec}</Text>
+        //                         </View>
+        //                         {/* play&pause icon */}
+        //                         <View>
+        //                             {
+        //                                 play ?
+        //                                     <Icon name='controller-paus' type='entypo' size={25} color="black" onPress={this._pause} />
+        //                                     :
+        //                                     <Icon name='controller-play' type='entypo' size={30} color="black" onPress={this._play} />
+        //                             }
+        //                         </View>
+        //                     </View>
+        //                     {/* Slider */}
+        //                     <View style={{ flex: 1, paddingHorizontal: 10, justifyContent: 'space-around' }}>
+        //                         <Slider
+        //                             // disabled //禁止滑动
+        //                             maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
+        //                             minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
+        //                             maximumValue={this.state.maximumValue} //滑块最大值
+        //                             minimumValue={0} //滑块最小值
+        //                             value={this.state.seconds}
+        //                             onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
+        //                                 value = parseInt(value);
+        //                                 this._getNowTime(value)
+        //                                 // 设置播放时间
+        //                                 whoosh.setCurrentTime(value);
+        //                             }} />
+        //                     </View>
+        //                 </View>
 
-                        <View style={{ flex: 1 }} >
-                            {/* <Text style={{textAlign:'center', fontSize:20, fontWeight:"bold", padding:30}}>Network Error!!!</Text> */}
-                            <Text style={{ textAlign: 'center', marginTop: 30, fontSize: 15, color: "grey" }}>音檔尚未上傳！</Text>
-                        </View>
+        //                 <View style={{ flex: 1 }} >
+        //                     {/* <Text style={{textAlign:'center', fontSize:20, fontWeight:"bold", padding:30}}>Network Error!!!</Text> */}
+        //                     <Text style={{ textAlign: 'center', marginTop: 30, fontSize: 15, color: "grey" }}>音檔尚未上傳！</Text>
+        //                 </View>
 
-                    </View>
-                </ ScrollView>
-            )
-        }
+        //             </View>
+        //         </ ScrollView>
+        //     )
+        // }
     }
 
 }
