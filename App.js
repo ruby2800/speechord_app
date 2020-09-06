@@ -19,7 +19,7 @@ import recordpage from './pages/record';
 import soundpage from './pages/sound';
 import wordpage from './pages/wordfile';
 import historypage from './pages/history';
-import initialpage from './pages/Launch';
+import launchpage from './pages/Launch';
 import registerpage from './pages/register';
 
 import { color } from 'react-native-reanimated';
@@ -84,8 +84,8 @@ function CustomDrawerContent(props) {
   //隱藏播放
   const { state, ...rest } = props;
   const newState = { ...state }  //copy from state before applying any filter. do not change original state
+  newState.routes = newState.routes.filter(item => item.name !== '啓動頁面') 
   newState.routes = newState.routes.filter(item => item.name !== '註冊頁面') 
-  newState.routes = newState.routes.filter(item => item.name !== '播放') 
   newState.routes = newState.routes.filter(item => item.name !== '文字稿') 
   //replace "Login' with your route name
   // newState.routes = newState.routes.filter(item => item.name !== '初始頁面')
@@ -109,17 +109,13 @@ function MyDrawer() {
 
     <Drawer.Navigator drawerContent={props => <CustomDrawerContent {...props} />}>
       {/* <Drawer.Screen name="初始頁面" component={Mainpage} /> */}
-      <Drawer.Screen name="啟動頁面" component={initialpage}
-        options={{
-          swipeEnabled: false,
-        }} />
+      <Drawer.Screen name="啓動頁面" component={launchpage}
+      options={{
+        swipeEnabled: false,
+      }} />
       <Drawer.Screen name="註冊頁面" component={registerpage} />
       <Drawer.Screen name="歷史紀錄" component={historypage} />
       <Drawer.Screen name="錄音" component={recordpage} />
-      <Drawer.Screen name="播放" component={soundpage} 
-         options={{
-          swipeEnabled: false,
-        }} />
       <Drawer.Screen name="文字稿" component={wordpage}
        options={{
         swipeEnabled: false,

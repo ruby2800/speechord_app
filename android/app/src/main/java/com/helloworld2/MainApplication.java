@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import ui.siriwave.RNSiriWaveViewPackage;
 import im.shimo.react.prompt.RNPromptPackage;
 import com.reactlibrary.RNSshClientPackage;
 import com.swmansion.reanimated.ReanimatedPackage;

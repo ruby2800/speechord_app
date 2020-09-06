@@ -6,6 +6,7 @@ import { Icon, Slider, Header } from 'react-native-elements';
 import Sound from 'react-native-sound';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
 import historypage from './history';
+import RNSiriWaveView from 'react-native-siri-wave-view';
 
 
 
@@ -60,6 +61,7 @@ export default class App extends Component {
                 this.prepareRecordingPath(this.state.audioPath);
                 // 录音进展
                 AudioRecorder.onProgress = (data) => {
+                    let decibels = 10 * Math.log10(data.currentPeakMetering / data.currentMetering) * -0.25
                     this.setState({ currentTime: Math.floor(data.currentTime) });
                 };
                 // 完成录音
@@ -118,7 +120,7 @@ export default class App extends Component {
 
     // 暂停录音
     _pause = async () => {
-        if (!this.state.recording) {
+        if ((!this.state.recording)) {
             return alert('請先按下錄音鍵')
         }
 
@@ -171,9 +173,9 @@ export default class App extends Component {
         //要加上去
         const { navigation } = this.props;
         this.setState({ stop: true, recording: false, paused: false });
-        if (!this.state.recording) {
-            return alert('未錄音')
-        }
+        // if ((!this.state.recording)) {
+        //     return alert('未錄音')
+        // }
         try {
 
 

@@ -29,7 +29,7 @@ export default class history extends Component {
         startread: 0,
         output: [],
         totalupload: false,
-        isloading: true,
+        //  isloading: true,
         //   fileloading: false
 
 
@@ -50,98 +50,101 @@ export default class history extends Component {
             this.props.navigation.navigate('歷史紀錄');
         };
         BackHandler.addEventListener("hardwareBackPress", backAction);
-        this.ReadDir();
+        this.setState({ refreshing: true });
+        this.ReadDir().then(() => {
+            this.setState({ refreshing: false });
+        });
     }
+    setStateAsync(state) {
+        return new Promise((resolve) => {
+            this.setState(state, resolve)
+            console.log(state)
+        });
+    }
+
 
     // 读取目录
     async ReadDir() {
-        let { startread, output, isloading } = this.state;
+        let { startread, output } = this.state;
         this.setState({
-           
             response: [],
-
+            output: []
         })
-      //  var fileloading = false;
-       // console.log(this.props.route.params.user);
-        await RNFS.readDir(AudioUtils.DocumentDirectoryPath)
-            .then((result) => {
 
-                var reg = new RegExp("^.*awb.*$");
-                let obj1;
+        RNFS.readDir(AudioUtils.DocumentDirectoryPath)
+            .then(
+                async (result) => {
 
-                // let output = [];
+                    var reg = new RegExp("^.*awb.*$");
 
+                    if (result && result.length > 0) {
 
-                if (result && result.length > 0) {
+                        for (let i = 0; i < result.length; i++) {
 
-
-                    //每次只抓最新的
-                 //   var i = 0;
-                    // while (i < result.length) {
-                    //     console.log(i)
-                    for (let i = 0; i < result.length; i++) {
-                      //  console.log("file" + fileloading);
-                        // if (!fileloading) {
-                        //     fileloading = true;
-
-
-                            if (reg.test(result[i].name)&&result[i].size > 1000) {
+                            if (reg.test(result[i].name) && result[i].size > 1000) {
                                 // console.log(result[i].name);
                                 // console.log(result[i].size);
 
-
-                                //   i++;
-
                                 var shortname = ((result[i].name).replace("name-", "")).replace(".awb", "");
 
-                             //  this.filestate("user", shortname, result[i].name, result[i].path);
-                              
 
-                                let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false, 'changename': false, 'anothername': "" }; //這裡接api然後可以用string判別01
+                                await this.filestate("user", shortname, result[i].name, result[i].path);
+                                //console.log(output);
+                                //  await this.setState({response:output});
+
+                                //不知為啥這個 一定要留
+                                await this.setStateAsync({ response: output });
+
+
+
+
+
+
+                                // let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false, 'changename': false, 'anothername': "" }; //這裡接api然後可以用string判別01
                                 //要到最後才能看有沒有上傳
 
-
-
-
-
-                                  this.setState({ startread: (i + 1) })
-                                  output.push(obj);
-                                // console.log(output[file_c].name);
-
+                                //                       this.setState({ startread: (i + 1) })
                             }
 
+                        }
+                        // asy = true;
+                        // if (asy) {
+                        //     this.setState({
+
+                        //         response: output,
+
+                        //     })
                         // }
 
+
+
+
                     }
-                    this.setState({
-                        isloading: false,
-                        response: output,
-                       
 
-                    })
+                    //  console.log(output);
+                    // this.setState({
 
+                    //     output: []
 
-                }
-                // this.setState({
-                    
-                //     output: []
-
-                // })
-            })
+                    // })
+                })
+            // .then(() => {
+            //     this.setState({ response: output });
+            //     
+            // })
 
             .catch((err) => {
                 console.log("錯誤" + err.message + err.code);
             });
 
+        // 
+
+
     }
     async filestate(user, sname, fname, fpath) {
 
-        let { startread, output, isloading } = this.state;
-        this.setState({
-           
-           // output: [],
+        let { startread, output } = this.state;
 
-        })
         var obj;
         let check = new FormData();
         // let filename = datas;
@@ -163,17 +166,21 @@ export default class history extends Component {
             })
             .then((resp) => { return resp.json() })
             .then((json) => {
-                console.log(json)
+                // console.log(json)
                 if (json == 1) {
-                    console.log("yes")
+                    console.log("1.yes")
                     obj = { 'name': fname, 'path': fpath, 'alreadyupload': true, 'changename': false, 'anothername': "" };
                 } else {
                     console.log("no")
                     obj = { 'name': fname, 'path': fpath, 'alreadyupload': false, 'changename': false, 'anothername': "" };
                 }
-                console.log("fetch" )
+                //      console.log("fetch")
+
                 output.push(obj);
-                
+
+                console.log("2.output\n" + output)
+                // this.setState({response:output});
+
 
             }
             )
@@ -214,11 +221,7 @@ export default class history extends Component {
             .then(() => {
 
                 console.log('FILE DELETED');
-                this.setState({
-           
-                    response: [],
-        
-                })
+
                 this.ReadDir();
             })
             .catch((err) => {
@@ -226,11 +229,6 @@ export default class history extends Component {
             })
         return res;
     }
-
-    changeFilename(a) {
-
-    }
-
 
     //沒有CONTENT TYPE
     _upload(datas, filename) {
@@ -309,10 +307,6 @@ export default class history extends Component {
                                         //必須在這判斷
                                         console.log(response.status);
                                         if (response.status == 200) {
-
-                                            test = !false;
-                                            // console.log("inside" + test)
-                                            return test;
                                         }
 
                                     })
@@ -341,247 +335,240 @@ export default class history extends Component {
 
 
     render() {
-        let { response, totalupload, isloading } = this.state;
+        let { totalupload, output } = this.state;
         const { navigation } = this.props;
-        console.log("g;4tj06" + isloading)
-        if (!isloading) {
-            return (
-                <View style={{ flex: 1 }} >
 
-                    {/* Header&Body */}
-                    < View style={{ flex: 7, backgroundColor: 'white' }}>
-                        {/* <View style={{ flex: 1, }}>                     */}
-                        < Header
-                            backgroundColor='transparent'
-                            containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
-                            leftComponent={{
-                                icon: 'menu', type: 'entypo', color: '#fff', underlayColor: '#3488C0',
-                                onPress: () => navigation.dispatch(DrawerActions.openDrawer())
-                            }}
+        return (
+            <View style={{ flex: 1 }} >
 
-                            centerComponent={{
-                                text: '歷史錄音',
-                                style: {
-                                    fontSize: 20,
-                                    fontWeight: 'bold',
-                                    fontFamily: 'Fonts.Lato',
-                                    color: 'white'
+                {/* Header&Body */}
+                < View style={{ flex: 7, backgroundColor: 'white' }}>
+                    {/* <View style={{ flex: 1, }}>                     */}
+                    < Header
+                        backgroundColor='transparent'
+                        containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
+                        leftComponent={{
+                            icon: 'menu', type: 'entypo', color: '#fff', underlayColor: '#3488C0',
+                            onPress: () => navigation.dispatch(DrawerActions.openDrawer())
+                        }}
 
-                                }
-                            }}
-                        // rightComponent={{ icon: 'mic', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
-                        />
-                        < ScrollView refreshControl={
-                            < RefreshControl
-                                refreshing={this.state.refreshing}
-                                onRefresh={this._onRefresh}
-                            />}>
-                            {/* <ScrollView> */}
-                            < View >
-                                {
+                        centerComponent={{
+                            text: '歷史錄音',
+                            style: {
+                                fontSize: 20,
+                                fontWeight: 'bold',
+                                fontFamily: 'Fonts.Lato',
+                                color: 'white'
+
+                            }
+                        }}
+                    // rightComponent={{ icon: 'mic', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
+                    />
+                    < ScrollView refreshControl={
+                        < RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />}>
+                        {/* <ScrollView> */}
+                        < View >
+                            {
 
 
-                                    response.map((l, i) => {
-                                     //   console.log("render"+l.alreadyupload);
-                                        if (!l.alreadyupload) {
-                                            
-                                            return (
-                                                <ListItem
-                                                    key={i}
-                                                    leftIcon={{ name: 'mic' }}
-                                                    title={() => {
-                                                        if (!l.changename) {
-                                                            return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
-                                                        } else {
-                                                            return <Text>{l.anothername}</Text>
+                                output.map((l, i) => {
+                                    //  console.log("render"+l.alreadyupload);
+                                    if (!l.alreadyupload) {
+
+                                        return (
+                                            <ListItem
+                                                key={i}
+                                                leftIcon={{ name: 'mic' }}
+                                                title={() => {
+                                                    if (!l.changename) {
+                                                        return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
+                                                    } else {
+                                                        return <Text>{l.anothername}</Text>
+                                                    }
+                                                }
+                                                }
+                                                subtitle={l.subtitle}
+                                                bottomDivider
+                                                rightIcon={{
+                                                    name: 'cloud-upload-outline',
+                                                    type: 'ionicon',
+                                                    onPress: () => {
+                                                        if (!l.alreadyupload) {
+
+
+                                                            if (this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))) {
+                                                                console.log("gan")
+                                                                //l.alreadyupload = true;
+                                                            }
+                                                            // l.alreadyupload = true;
+
                                                         }
+                                                        else {
+                                                            alert("bug");
+                                                        }
+
                                                     }
+                                                }}
+                                                onPress={() => {
+                                                    if (l.changename) {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                    } else {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
-                                                    subtitle={l.subtitle}
-                                                    bottomDivider
-                                                    rightIcon={{
-                                                        name: 'cloud-upload-outline',
-                                                        type: 'ionicon',
-                                                        onPress: () => {
-                                                            if (!l.alreadyupload) {
+
+                                                }}
+
+                                                onLongPress={() => {
+
+                                                    Alert.alert(
+                                                        "提醒",
+                                                        "確定要刪除嗎",
+                                                        [
+                                                            {
+                                                                text: "確定",
+                                                                onPress: () => this.deleteFile(l.path),
+                                                                style: "cancel"
+                                                            },
+                                                            { text: "沒有", onPress: () => console.log("OK Pressed") },
+                                                            {
+                                                                text: "改檔名",
+                                                                onPress: () => {
+                                                                    prompt(
+                                                                        '改檔名',
+                                                                        '輸入',
+                                                                        [
+                                                                            { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                                                                            {
+                                                                                text: '完成', onPress: n => {
+                                                                                    l.anothername = n;
+                                                                                    l.changename = true;
+                                                                                    console.log('name: ' + n)
+                                                                                    this.ReadDir();
+                                                                                }
+                                                                            },
+                                                                        ],
+                                                                        {
+
+                                                                            placeholder: (l.name.replace("name-", "")).replace(".awb", "")
+                                                                        }
+                                                                    );
 
 
-                                                                if (this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))) {
-                                                                    consoel.log("gan")
-                                                                    //l.alreadyupload = true;
                                                                 }
-                                                                // l.alreadyupload = true;
-
-                                                            }
-                                                            else {
-                                                                alert("bug");
-                                                            }
-
-                                                        }
-                                                    }}
-                                                    onPress={() => {
-                                                        if (l.changename) {
-                                                            navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
-                                                        } else {
-                                                            navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
-                                                        }
-
-                                                    }}
-
-                                                    onLongPress={() => {
-
-                                                        Alert.alert(
-                                                            "提醒",
-                                                            "確定要刪除嗎",
-                                                            [
-                                                                {
-                                                                    text: "確定",
-                                                                    onPress: () => this.deleteFile(l.path),
-                                                                    style: "cancel"
-                                                                },
-                                                                { text: "沒有", onPress: () => console.log("OK Pressed") },
-                                                                {
-                                                                    text: "改檔名",
-                                                                    onPress: () => {
-                                                                        prompt(
-                                                                            '改檔名',
-                                                                            '輸入',
-                                                                            [
-                                                                                { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                                                                                {
-                                                                                    text: '完成', onPress: n => {
-                                                                                        l.anothername = n;
-                                                                                        l.changename = true;
-                                                                                        console.log('name: ' + n)
-                                                                                        this.ReadDir();
-                                                                                    }
-                                                                                },
-                                                                            ],
-                                                                            {
-
-                                                                                placeholder: (l.name.replace("name-", "")).replace(".awb", "")
-                                                                            }
-                                                                        );
-
-
-                                                                    }
-                                                                },
-                                                            ],
-                                                            { cancelable: false }
-                                                        );
-                                                    }}
-                                                />
-                                            )
-                                        }
-                                        if (l.alreadyupload) {
-                                            return (
-                                                <ListItem
-                                                    key={i}
-                                                    leftIcon={{ name: 'mic' }}
-                                                    title={() => {
-                                                        if (!l.changename) {
-                                                            return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
-                                                        } else {
-                                                            return <Text>{l.anothername}</Text>
-                                                        }
-                                                    }
-                                                    }
-                                                    subtitle={l.subtitle}
-                                                    bottomDivider
-                                                    rightIcon={{
-                                                        name: 'checkmark',
-                                                        type: 'ionicon',
-                                                    }}
-                                                    onPress={() => {
-                                                        if (l.changename) {
-                                                            navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
-                                                        } else {
-                                                            navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
-                                                        }
-
-                                                    }}
-                                                    onLongPress={() => {
-
-                                                        Alert.alert(
-                                                            "提醒",
-                                                            "確定要刪除嗎",
-                                                            [
-                                                                {
-                                                                    text: "確定",
-                                                                    onPress: () => this.deleteFile(l.path),
-                                                                    style: "cancel"
-                                                                },
-
-                                                                { text: "沒有", onPress: () => console.log("OK Pressed") },
-                                                                {
-                                                                    text: "改檔名",
-                                                                    onPress: () => {
-                                                                        prompt(
-                                                                            '改檔名',
-                                                                            '輸入',
-                                                                            [
-                                                                                { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                                                                                {
-                                                                                    text: '完成', onPress: n => {
-                                                                                        l.anothername = n;
-                                                                                        l.changename = true;
-                                                                                        console.log('name: ' + n)
-                                                                                        this.ReadDir();
-                                                                                    }
-                                                                                },
-                                                                            ],
-                                                                            {
-
-                                                                                placeholder: (l.name.replace("name-", "")).replace(".awb", "")
-                                                                            }
-                                                                        );
-
-
-                                                                    }
-                                                                },
-                                                            ],
-                                                            { cancelable: false }
-                                                        );
-                                                    }}
-                                                />
-                                            )
-                                        }
+                                                            },
+                                                        ],
+                                                        { cancelable: false }
+                                                    );
+                                                }}
+                                            />
+                                        )
                                     }
+                                    if (l.alreadyupload) {
+                                        return (
+                                            <ListItem
+                                                key={i}
+                                                leftIcon={{ name: 'mic' }}
+                                                title={() => {
+                                                    if (!l.changename) {
+                                                        return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
+                                                    } else {
+                                                        return <Text>{l.anothername}</Text>
+                                                    }
+                                                }
+                                                }
+                                                subtitle={l.subtitle}
+                                                bottomDivider
+                                                rightIcon={{
+                                                    name: 'checkmark',
+                                                    type: 'ionicon',
+                                                }}
+                                                onPress={() => {
+                                                    if (l.changename) {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                    } else {
+                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
+                                                    }
+
+                                                }}
+                                                onLongPress={() => {
+
+                                                    Alert.alert(
+                                                        "提醒",
+                                                        "確定要刪除嗎",
+                                                        [
+                                                            {
+                                                                text: "確定",
+                                                                onPress: () => this.deleteFile(l.path),
+                                                                style: "cancel"
+                                                            },
+
+                                                            { text: "沒有", onPress: () => console.log("OK Pressed") },
+                                                            {
+                                                                text: "改檔名",
+                                                                onPress: () => {
+                                                                    prompt(
+                                                                        '改檔名',
+                                                                        '輸入',
+                                                                        [
+                                                                            { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                                                                            {
+                                                                                text: '完成', onPress: n => {
+                                                                                    l.anothername = n;
+                                                                                    l.changename = true;
+                                                                                    console.log('name: ' + n)
+                                                                                    this.ReadDir();
+                                                                                }
+                                                                            },
+                                                                        ],
+                                                                        {
+
+                                                                            placeholder: (l.name.replace("name-", "")).replace(".awb", "")
+                                                                        }
+                                                                    );
 
 
-                                    )
-
-
-
+                                                                }
+                                                            },
+                                                        ],
+                                                        { cancelable: false }
+                                                    );
+                                                }}
+                                            />
+                                        )
+                                    }
                                 }
-                                {/* <Button title="read"
+
+
+                                )
+
+
+
+                            }
+                            {/* <Button title="read"
                         onPress={() => this.ReadDir()} /> */}
 
-                            </View >
-                        </ScrollView >
-
-                    </View >
-
-                    {/* Footer */}
-                    < View style={{ flex: 1, backgroundColor: '#E8E8E8' }
-                    }>
-                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Icon raised name='controller-record' type='entypo' color='red'
-                                onPress={() => navigation.navigate('錄音')}
-                            />
-                        </View>
-                    </View >
+                        </View >
+                    </ScrollView >
 
                 </View >
 
+                {/* Footer */}
+                < View style={{ flex: 1, backgroundColor: '#E8E8E8' }
+                }>
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Icon raised name='controller-record' type='entypo' color='red'
+                            onPress={() => navigation.navigate('錄音')}
+                        />
+                    </View>
+                </View >
 
-            )
-        }
-        else {
-            return (
-                <Text>svsd</Text>
-            );
-        }
+            </View >
+
+
+        )
     }
 
 }
