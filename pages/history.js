@@ -9,6 +9,7 @@ import { AudioUtils } from 'react-native-audio';
 
 // import Upload from 'react-native-background-upload'
 import prompt from 'react-native-prompt-android';
+import Swipeout from 'react-native-swipeout';
 
 
 
@@ -58,7 +59,7 @@ export default class history extends Component {
     setStateAsync(state) {
         return new Promise((resolve) => {
             this.setState(state, resolve)
-            console.log(state)
+          //  console.log(state)
         });
     }
 
@@ -148,10 +149,10 @@ export default class history extends Component {
         var obj;
         let check = new FormData();
         // let filename = datas;
-        check.append('userName', "testClient")
+        check.append('userName', this.props.route.params.user)
 
 
-        //  console.log(shortname)
+         
         check.append('fileName', sname);
 
 
@@ -178,7 +179,7 @@ export default class history extends Component {
 
                 output.push(obj);
 
-                console.log("2.output\n" + output)
+              //  console.log("2.output\n" + output)
                 // this.setState({response:output});
 
 
@@ -237,18 +238,18 @@ export default class history extends Component {
         let test = false;
 
         //let filename = this.filenames;
-        let username = "testClient"
+       // let username = "testClient"
         let formData = new FormData();
         // let filename = datas;
-        formData.append('userName', "testClient")
-        // formdata.append('userName',name)
+        formData.append('userName', this.props.route.params.user)
+        console.log(this.props.route.params.user)
         formData.append('file', { uri: `file://${datas}`, name: filename, type: 'multipart/form-data' })
 
         let formData2 = new FormData();
         // let filename = datas;
-        formData2.append('userName', "testClient")
+        formData2.append('userName',this.props.route.params.user)
         // formdata.append('userName',name)
-        formData2.append('fileName', filename)
+        formData2.append('fileName',filename)
         //之後要抓使用者名稱
 
         fetch(`http://140.115.81.199:9943/audioUpload`,
@@ -337,7 +338,17 @@ export default class history extends Component {
     render() {
         let { totalupload, output } = this.state;
         const { navigation } = this.props;
-
+        const swipeoutBtns = [
+            {
+              text: 'Delete',
+              backgroundColor: 'red',
+              underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+              onPress: () => {
+                //this.deleteNote(item);
+              },
+            },
+          ];
+          //console.log(this.props.route.params.user)
         return (
             <View style={{ flex: 1 }} >
 
@@ -362,8 +373,17 @@ export default class history extends Component {
 
                             }
                         }}
+
                     // rightComponent={{ icon: 'mic', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
                     />
+                    {/* <Swipeout right={swipeoutBtns} onPress>
+                        <View>
+                            <Text>Swipe me left</Text>
+                        </View>
+                    </Swipeout> */}
+
+
+
                     < ScrollView refreshControl={
                         < RefreshControl
                             refreshing={this.state.refreshing}
@@ -379,6 +399,8 @@ export default class history extends Component {
                                     if (!l.alreadyupload) {
 
                                         return (
+                                            // <Swipeout right={swipeoutBtns}>
+
                                             <ListItem
                                                 key={i}
                                                 leftIcon={{ name: 'mic' }}
@@ -414,9 +436,9 @@ export default class history extends Component {
                                                 }}
                                                 onPress={() => {
                                                     if (l.changename) {
-                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                        navigation.navigate('文字稿', { username:this.props.route.params.user,url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
                                                     } else {
-                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
+                                                        navigation.navigate('文字稿', { username:this.props.route.params.user,url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
 
                                                 }}
@@ -464,6 +486,7 @@ export default class history extends Component {
                                                     );
                                                 }}
                                             />
+                                            // </Swipeout>
                                         )
                                     }
                                     if (l.alreadyupload) {
@@ -487,9 +510,9 @@ export default class history extends Component {
                                                 }}
                                                 onPress={() => {
                                                     if (l.changename) {
-                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                        navigation.navigate('文字稿', { username:this.props.route.params.user,url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
                                                     } else {
-                                                        navigation.navigate('文字稿', { url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
+                                                        navigation.navigate('文字稿', {username:this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
 
                                                 }}

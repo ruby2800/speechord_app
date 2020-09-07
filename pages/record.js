@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, RefreshControl, Image } from 'react-native';
 //import Icon from 'react-native-vector-icons/FontAwesome';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { Icon, Slider, Header } from 'react-native-elements';
 import Sound from 'react-native-sound';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
 import historypage from './history';
-import RNSiriWaveView from 'react-native-siri-wave-view';
+import * as Animatable from 'react-native-animatable';
+//MyCustomComponent = Animatable.createAnimatableComponent(MyCustomComponent);
+//import WaveView from "react-native-wave-view";
+//import {Surface, Shape} from '@react-native-community/art';
+//import { HcdWaveView } from 'react-native-art-hcdwave'
+
+//import Wave from 'react-wavify'
+//import RNSiriWaveView from 'react-native-siri-wave-view';
 
 
 
@@ -173,9 +180,9 @@ export default class App extends Component {
         //要加上去
         const { navigation } = this.props;
         this.setState({ stop: true, recording: false, paused: false });
-        // if ((!this.state.recording)) {
-        //     return alert('未錄音')
-        // }
+        if ((!this.state.recording)) {
+            return alert('未錄音')
+        }
         try {
 
 
@@ -212,6 +219,10 @@ export default class App extends Component {
         //     this._record;
         //     console.log(this.props.route.params.record)
         // }
+        
+
+       console.log(this.props.route.params.user);
+
 
         return (
 
@@ -227,37 +238,83 @@ export default class App extends Component {
                             underlayColor: '#3488C0',
                             onPress: () => this.props.navigation.navigate('歷史紀錄')
                         }}
-
-                        centerComponent={{
-                            text:
-                                recording ? '錄音中' :
-                                    pause ? '暫停' : '沒有錄音'
-
-                            ,
-                            style: {
-                                fontSize: 20,
-                                fontWeight: 'bold',
-                                fontFamily: 'Fonts.Lato',
-                                color: 'black'
-                            }
-                        }}
                     />
-
+                   
                     <View style={{ flex: 2, justifyContent: 'space-around', alignItems: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Icon name='mic' type='material' color='red' />
-                            <Text style={{ fontSize: 40, fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>{totalHour}:{totalMin}:{totalSec}</Text>
+                            {/* <Icon name='mic' type='material' color='red' /> */}
+                            <Text style={{ fontSize: 50, fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>{totalHour}:{totalMin}:{totalSec}</Text>
+                            {/* <Text style={{ fontSize: 16, }}>{
+                                recording ? '錄音中' :
+                                    pause ? '暫停' : ''
+                            }</Text> */}
+                            <View>{
+                                recording ?
+                                    <View>
+                                        <Text style={{ fontSize: 16, }}>錄音中</Text>
+                                        <Animatable.View style={{ fontSize: 16 }} animation="fadeIn" duration={1000} iterationCount={100} direction="alternate">
+                                            <Icon name='mic' type='material' color='red' />
+
+                                        </Animatable.View>
+                                    </View> :
+                                    pause ? <Text style={{ fontSize: 16, }}>暫停</Text> : <Text style={{ fontSize: 16, }}>尚未錄音</Text>
+
+                            }</View>
+
+                            {/* <Image
+                                source={require('./wave2.jpg')}
+                                style={{ width: 100, height: 100 }}
+                            /> */}
+
                         </View>
+                        <View style={{ flex: 1, alignItems: 'center' }}>{
+                            <View>{
+                                recording ?
+                                    <Image
+                                        source={require('./wave.gif')}
+                                        style={{ width: 300, height: 150 }}
+                                    />
+                                    :
+                                    pause ? <Image
+                                        source={require('./wave3.jpg')}
+                                        style={{ width: 300, height: 150 }}
+                                    /> : <Image
+                                            source={require('./wave3.jpg')}
+                                            style={{ width: 300, height: 150 }}
+                                        />
+
+                            }</View>
+                        }
+
+
+
+                        </View>
+
+                        {/* <View style={styles.container}>
+                            <HcdWaveView
+                                surfaceWidth={230}
+                                surfaceHeigth={230}
+                                powerPercent={76}
+                                type="dc"
+                                style={{ backgroundColor: '#FF7800' }}></HcdWaveView>
+                            <HcdWaveView
+                                surfaceWidth={230}
+                                surfaceHeigth={230}
+                                powerPercent={76}
+                                type="ac"
+                                style={{ backgroundColor: '#FF7800' }}></HcdWaveView>
+                        </View> */}
 
 
                         {/* <Text style={styles.text} onPress={this._readFile}>上傳 </Text> */}
                     </View>
+
                 </View>
 
                 <View style={{ flex: 1, backgroundColor: '#E8E8E8', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, backgroundColor: '#E8E8E8' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Icon raised name='pause' type='material' color='red'
+                            <Icon raised name='pause' type='material' color='black'
                                 onPress={this._pause}
                             />
                         </View>
@@ -274,8 +331,6 @@ export default class App extends Component {
                                     </View>
                                 </View>
                                 :
-
-
                                 <View style={{ flex: 1, backgroundColor: '#E8E8E8' }}>
                                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                                         <Icon raised name='controller-record' type='entypo' color='red'
@@ -289,7 +344,7 @@ export default class App extends Component {
                     </View>
                     <View style={{ flex: 1, backgroundColor: '#E8E8E8' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Icon raised name='stop' type='material' color='red'
+                            <Icon raised name='stop' type='material' color='black'
                                 onPress={this._stop}
                             />
                         </View>
@@ -311,5 +366,6 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 18,
         marginVertical: 10,
-    }
+    },
+
 })

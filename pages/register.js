@@ -22,97 +22,126 @@ class Inputs extends Component {
         //inputText: '',
         text: '',
         response: [],
+        user: ''
       }
    
     }
    
    uploadData(){
-      // const { TextInputEmail }  = this.state ;
-      // //const { TextInputPassword }  = this.state ;
-      // const{ text } = this.state ;
+    
+      // var email_rule = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+
+      // if (!email_rule.test(this.state.TextInputEmail)) {
+      //    if (this.state.TextInputEmail != null && this.state.TextInputEmail != "") {
+      //       if (this.state.TextInputPassword != null && this.state.TextInputPassword != "") {
+
+      //          const { TextInputEmail }  = this.state ;
+      //          const{ text } = this.state ;
+               
+      //          let formData = new FormData();
+      //          formData.append('Email', TextInputEmail);
+      //          formData.append('Password', text);
+      //          fetch(`http://140.115.81.199:9943/signUp`,
+      //          {
+      //             method: 'POST',
+      //             headers: {
+      //                'Accept': 'application/json',
+      //                'Content-Type': 'multipart/form-data',
+      //          },
+      //             body: formData
+      //          })
+      //          .then(response => {
+      //             console.log(response.status);
+      //          })
+      //          .then(result => {
+      //             console.log("success", result)
+      //          })
+      //          .catch(error => {
+      //             console.log("error", error)
+      //          })
+      //          //副頁面傳遞參數給history
+      //          this.props.navigation.navigate('歷史紀錄',{
+      //             user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
+      //          })
+      
+      //    } else {
+      //          Alert.alert("密碼不能為空");
+      //       }
+
+      //    } else {
+      //       Alert.alert("帳號不能為空");
+      //   } 
+      //    else {
+      //    Alert.alert("Email格式錯誤");
+      //  }
+      
+      sha256(this.state.TextInputPassword).then(hash => {
+         this.setState({ text:hash })
+      });
 
       if (this.state.TextInputEmail != null && this.state.TextInputEmail != "") {
-         if (this.state.TextInputPassword != null && this.state.TextInputPassword != "") {
+          if (this.state.TextInputPassword != null && this.state.TextInputPassword != "") {
+                  const { TextInputEmail }  = this.state ;
+                  //const { TextInputPassword }  = this.state ;
+                  const{ text } = this.state ;
+                  let  user   = this.state.TextInputEmail.replace("@gmail.com", "");
+                  let formData = new FormData();
+                  formData.append('Email', TextInputEmail);
+                  //formData.append('Password', TextInputPassword);
+                  formData.append('Password', text);
+                  formData.append( "userName" , user);
+                  fetch(`http://140.115.81.199:9943/signUp`,
+                  {
+                     method: 'POST',
+                     headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'multipart/form-data',
+                     },
+                     body: formData,
+                  })
+                  .then(response => {
+                     console.log(response.status);
+                  })
+                  .then(result => {
+                     console.log("success", result)
+                  })
+                  .catch(error => {
+                     console.log("error", error)
+                  })
 
-            const { TextInputEmail }  = this.state ;
-            const{ text } = this.state ;
+                  // const { navigation } = this.props;
+                  // navigation.navigate('歷史紀錄');
             
-            let formData = new FormData();
-            formData.append('Email', TextInputEmail);
-            formData.append('Password', text);
-            fetch(`http://140.115.81.199:9943/signUp`,
-            {
-               method: 'POST',
-               headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'multipart/form-data',
-            },
-               body: formData
-            })
-            .then(response => {
-               console.log(response.status);
-            })
-            .then(result => {
-               console.log("success", result)
-            })
-            .catch(error => {
-               console.log("error", error)
-            })
-            //副頁面傳遞參數給history
-            this.props.navigation.navigate('歷史紀錄',{
-               user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
-            })
-   
-        } else {
-            Alert.alert("密碼不能為空");
-         }
+               // 副頁面傳遞參數給history
+                  this.props.navigation.navigate('歷史紀錄',{
+                     user : this.state.TextInputEmail.replace("@gmail.com", "") ,
+               })
+               // const { username } = (result['Email'].replace("@gmail.com", " "));
+         } else {
+               Alert.alert("密碼不能為空");
+           }
 
       } else {
          Alert.alert("帳號不能為空");
-      }
-      
-   //    const { TextInputEmail }  = this.state ;
-   //     //const { TextInputPassword }  = this.state ;
-   //    const{ text } = this.state ;
-   //    let formData = new FormData();
-   //    formData.append('Email', TextInputEmail);
-   //    //formData.append('Password', TextInputPassword);
-   //    formData.append('Password', text);
-   //    fetch(`http://140.115.81.199:9943/signUp`,
-   //    {
-   //       method: 'POST',
-   //       headers: {
-   //          'Accept': 'application/json',
-   //          'Content-Type': 'multipart/form-data',
-   //       },
-   //       body: formData
-   //    })
-   //    .then(response => {
-   //       console.log(response.status);
-   //    })
-   //    .then(result => {
-   //       console.log("success", result)
-   //    })
-   //    .catch(error => {
-   //       console.log("error", error)
-   //    })
+         } 
 
-   //    // const { navigation } = this.props;
-   //    // navigation.navigate('歷史紀錄');
-
-   //    //副頁面傳遞參數給history
-   //    this.props.navigation.navigate('歷史紀錄',{
-   //       user : this.state.TextInputEmail.replace("@gmail.com", " ") ,
-   //   })
-   //  // const { username } = (result['Email'].replace("@gmail.com", " "));
    }
 
-  convertSHA(){
-   //Encode SHA256 
-   sha256(this.state.TextInputPassword).then(hash => {
-     this.setState({ text:hash })
-   });
-  }
+      backtolaunch(){
+         const { navigation } = this.props;
+         navigation.navigate('啟動頁面');
+      }
+
+      instruction(){
+         Alert.alert("輸入信箱及密碼後，進入SPEECHORD");
+      }
+      // convertSHA(){
+      //    //Encode SHA256 
+      //    sha256(this.state.TextInputPassword).then(hash => {
+      //    this.setState({ text:hash })
+      //    });
+      // }
+   
 
   /* 
    register = (email, pass) => {
@@ -121,49 +150,7 @@ class Inputs extends Component {
       navigation.navigate('歷史紀錄');
    }
    */
-   InsertDataToServer = () =>{
- 
-      /*
-      const { TextInputEmail }  = this.state ;
-      const { TextInputPassword }  = this.state ;
-      
-      
-      
-     fetch('140.115.81.238/home/testDB/submit_user_info.php', {
-       method: 'POST',
-       headers: {
-         'Accept': 'application/json',
-         'Content-Type': 'application/json',
-       },
-       body: JSON.stringify({
-      
-         email: TextInputEmail,
-      
-         password: TextInputPassword
-      
-       })
-      
-     }).then((response) => response.json())
-           .then((responseJson) => {
-      
-     // Showing response message coming from server after inserting records.
-             Alert.alert(responseJson);
-      
-           }).catch((error) => {
-             console.error(error);
-           });*/
 
-         const { navigation } = this.props;
-         navigation.navigate('歷史紀錄');
-      
-       }
-      
-
-      state = {
-         modalVisible: true,
-      }
- 
-      onClose = () => this.setState({ modalVisible: false });
 
    render() {
 
@@ -180,9 +167,14 @@ class Inputs extends Component {
             </Overlay> */}
 
             <Header
-               leftComponent={{ icon: 'menu', color: '#fff' }}
+               rightComponent={{ icon: 'question', color: '#fff',
+               onPress: () => this.instruction()
+               }}
                centerComponent={{ text: '註冊', style: { fontSize: 18, color: '#fff' } }}
-               rightComponent={{ icon: 'home', color: '#fff' }}/>
+               leftComponent={{ icon: 'home', color: '#fff',
+               onPress: () => this.backtolaunch()
+         
+               }}/>
 
             <Input 
                style = {styles.input}
@@ -227,20 +219,8 @@ class Inputs extends Component {
                errorStyle={{ color: 'red' }}
                errorMessage='AT LEAST 6 WORDS OR NUMBERS '
             />
-          
-           {/* <CheckBox
-               title='商務會議'
-               checkedIcon='dot-circle-o'
-               uncheckedIcon='circle-o'
-               checked={this.state.checked}
-               onPress={() => this.setState({checked: !this.state.checked})}/>
-           <CheckBox
-               title='校園會議'
-               checkedIcon='dot-circle-o'
-               uncheckedIcon='circle-o'
-               checked={this.state.checked}
-               onPress={() => this.setState({checked: !this.state.checked})}/> */}
-{/* 
+   
+         {/* 
             <TouchableOpacity
                style = {styles.submitButton}
                onPress = {
@@ -254,19 +234,19 @@ class Inputs extends Component {
                style = {styles.submitButton}
                onPress={()=> this.uploadData()}>
 
-               <Text style = {styles.submitButtonText}>SUBMIT AND ENTER SPEECHORD </Text>
+               <Text style = {styles.submitButtonText}>進入 SPEECHORD </Text>
             </TouchableOpacity>
             
-            {/* <Text>'Please insert any value to convert in SHA 256'</Text> */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                style={styles.button}
                title="Conver sh5"
                //onPress={this.convertSHA.bind(this)}
                onPress={()=> this.convertSHA()}
                >
                   <Text>Conver to SHA 256</Text>
-            </TouchableOpacity>
-            <Text style={styles.textStyle}>{this.state.text}</Text>
+            </TouchableOpacity> */}
+
+            {/* <Text style={styles.textStyle}>{this.state.text}</Text>  */}
             {/* <Image
                style={styles.tinyLogo}
                source={require('./Common.jpg')}

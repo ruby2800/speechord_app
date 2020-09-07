@@ -72,7 +72,7 @@ export default class App extends React.Component {
 
         /*用server資料的時候*/
         let formData = new FormData();
-            formData.append('userName', 'testClient');
+            formData.append('userName', this.props.route.params.username);
             formData.append('fileName', this.props.route.params.name);
 
         const response = fetch(`http://140.115.81.199:9943/textFetch`,
@@ -298,7 +298,7 @@ export default class App extends React.Component {
             this.setState({TextInputDisableHolder:false, borderStatus: false})
 
             let formData = new FormData();
-                formData.append('userName', 'testClient');
+                formData.append('userName', this.props.route.params.username);
                 formData.append('fileName', this.props.route.params.name);
                 formData.append('modCont', this.state.textTrans);                    
 
@@ -653,7 +653,7 @@ export default class App extends React.Component {
         console.log(this.state.numberOfsummary);
 
         let formData = new FormData();
-            formData.append('userName', 'testClient');
+            formData.append('userName', this.props.route.params.username);
             formData.append('fileName', this.props.route.params.name);
 
         fetch(`http://140.115.81.199:9943/sumSet/${numberOfsummary}`,
@@ -719,7 +719,7 @@ export default class App extends React.Component {
             this.setState({TextInputDisableHolder:false, borderStatus: false})
 
             let formData = new FormData();
-                formData.append('userName', 'testClient');
+                formData.append('userName', this.props.route.params.username);
                 formData.append('fileName', this.props.route.params.name);
                 formData.append('modCont', this.state.textSumm);                    
 
@@ -830,7 +830,8 @@ export default class App extends React.Component {
         let time = this.state;
         const { navigation } = this.props;
         let { play, pause } = this.state;
-        const { isLoading } = this.state; //文件
+        const { isLoading } = this.state; 
+        console.log("傳成功了"+this.props.route.params.username)//文件
 
         // if (this.props.route.params.l) {
             if (this.state.isLoading) {
