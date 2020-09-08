@@ -219,9 +219,9 @@ export default class App extends Component {
         //     this._record;
         //     console.log(this.props.route.params.record)
         // }
-        
 
-       console.log(this.props.route.params.user);
+
+        // console.log(this.props.route.params.user);
 
 
         return (
@@ -239,7 +239,7 @@ export default class App extends Component {
                             onPress: () => this.props.navigation.navigate('歷史紀錄')
                         }}
                     />
-                   
+
                     <View style={{ flex: 2, justifyContent: 'space-around', alignItems: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             {/* <Icon name='mic' type='material' color='red' /> */}
@@ -257,7 +257,15 @@ export default class App extends Component {
 
                                         </Animatable.View>
                                     </View> :
-                                    pause ? <Text style={{ fontSize: 16, }}>暫停</Text> : <Text style={{ fontSize: 16, }}>尚未錄音</Text>
+                                    pause ?
+                                        <View>
+                                            <Text style={{ fontSize: 16, }}>暫停</Text>
+                                            <Icon name='mic' type='material' color='red' />
+                                        </View> :
+                                        <View>
+                                            <Text style={{ fontSize: 16, }}>尚未錄音</Text>
+                                            <Icon name='mic' type='material' color='red' />
+                                        </View>
 
                             }</View>
 
@@ -276,10 +284,10 @@ export default class App extends Component {
                                     />
                                     :
                                     pause ? <Image
-                                        source={require('./wave3.jpg')}
+                                        source={require('./wave4.jpg')}
                                         style={{ width: 300, height: 150 }}
                                     /> : <Image
-                                            source={require('./wave3.jpg')}
+                                            source={require('./wave4.jpg')}
                                             style={{ width: 300, height: 150 }}
                                         />
 

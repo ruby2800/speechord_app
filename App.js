@@ -24,7 +24,7 @@ import registerpage from './pages/register';
 
 import { color } from 'react-native-reanimated';
 
-
+console.disableYellowBox = true
 
 // function Mainpage({ navigation }) {
 //   return (

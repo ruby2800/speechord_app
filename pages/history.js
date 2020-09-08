@@ -10,6 +10,7 @@ import { AudioUtils } from 'react-native-audio';
 // import Upload from 'react-native-background-upload'
 import prompt from 'react-native-prompt-android';
 import Swipeout from 'react-native-swipeout';
+import * as Animatable from 'react-native-animatable';
 
 
 
@@ -30,6 +31,7 @@ export default class history extends Component {
         startread: 0,
         output: [],
         totalupload: false,
+        isupload: -1
         //  isloading: true,
         //   fileloading: false
 
@@ -59,12 +61,13 @@ export default class history extends Component {
     setStateAsync(state) {
         return new Promise((resolve) => {
             this.setState(state, resolve)
-          //  console.log(state)
+            //  console.log(state)
         });
     }
 
 
     // 读取目录
+    //最新的陣列 三個陣列! == 比對 
     async ReadDir() {
         let { startread, output } = this.state;
         this.setState({
@@ -76,7 +79,16 @@ export default class history extends Component {
             .then(
                 async (result) => {
 
+
                     var reg = new RegExp("^.*awb.*$");
+                    var timeorder;
+
+                    result.sort((a, b) => {
+                        return a.mtime -
+                            b.mtime
+                    }).reverse();
+                    //console.log(sorted_meetings)
+
 
                     if (result && result.length > 0) {
 
@@ -84,7 +96,10 @@ export default class history extends Component {
 
                             if (reg.test(result[i].name) && result[i].size > 1000) {
                                 // console.log(result[i].name);
-                                // console.log(result[i].size);
+
+
+                                console.log(result[i].mtime);
+                                // mtime: date
 
                                 var shortname = ((result[i].name).replace("name-", "")).replace(".awb", "");
 
@@ -95,11 +110,6 @@ export default class history extends Component {
 
                                 //不知為啥這個 一定要留
                                 await this.setStateAsync({ response: output });
-
-
-
-
-
 
                                 // let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false, 'changename': false, 'anothername': "" }; //這裡接api然後可以用string判別01
                                 //要到最後才能看有沒有上傳
@@ -152,7 +162,7 @@ export default class history extends Component {
         check.append('userName', this.props.route.params.user)
 
 
-         
+
         check.append('fileName', sname);
 
 
@@ -170,19 +180,14 @@ export default class history extends Component {
                 // console.log(json)
                 if (json == 1) {
                     console.log("1.yes")
-                    obj = { 'name': fname, 'path': fpath, 'alreadyupload': true, 'changename': false, 'anothername': "" };
+                    obj = { 'name': fname, 'path': fpath, 'alreadyupload': true, 'isupload2': false, 'anothername': "" };
                 } else {
                     console.log("no")
-                    obj = { 'name': fname, 'path': fpath, 'alreadyupload': false, 'changename': false, 'anothername': "" };
+                    obj = { 'name': fname, 'path': fpath, 'alreadyupload': false, 'isupload2': false, 'anothername': "" };
                 }
-                //      console.log("fetch")
+
 
                 output.push(obj);
-
-              //  console.log("2.output\n" + output)
-                // this.setState({response:output});
-
-
             }
             )
     }
@@ -238,7 +243,7 @@ export default class history extends Component {
         let test = false;
 
         //let filename = this.filenames;
-       // let username = "testClient"
+        // let username = "testClient"
         let formData = new FormData();
         // let filename = datas;
         formData.append('userName', this.props.route.params.user)
@@ -247,9 +252,9 @@ export default class history extends Component {
 
         let formData2 = new FormData();
         // let filename = datas;
-        formData2.append('userName',this.props.route.params.user)
+        formData2.append('userName', this.props.route.params.user)
         // formdata.append('userName',name)
-        formData2.append('fileName',filename)
+        formData2.append('fileName', filename)
         //之後要抓使用者名稱
 
         fetch(`http://140.115.81.199:9943/audioUpload`,
@@ -313,6 +318,7 @@ export default class history extends Component {
                                     })
                                     .then(result => {
                                         this.ReadDir();
+                                        // this.setState({ isupload: false })
                                         console.log("successsf", result)
                                     })
                                     .catch(error => {
@@ -333,22 +339,30 @@ export default class history extends Component {
         //console.log(test)
 
     }
+    _compare(a, b) {
+        if (a == b) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
     render() {
-        let { totalupload, output } = this.state;
+        let { totalupload, output, isupload } = this.state;
         const { navigation } = this.props;
         const swipeoutBtns = [
             {
-              text: 'Delete',
-              backgroundColor: 'red',
-              underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
-              onPress: () => {
-                //this.deleteNote(item);
-              },
+                text: 'Delete',
+                backgroundColor: 'red',
+                underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
+                onPress: () => {
+                    //this.deleteNote(item);
+                },
             },
-          ];
-          //console.log(this.props.route.params.user)
+        ];
+        var a=0;
+        //console.log(this.props.route.params.user)
         return (
             <View style={{ flex: 1 }} >
 
@@ -397,97 +411,222 @@ export default class history extends Component {
                                 output.map((l, i) => {
                                     //  console.log("render"+l.alreadyupload);
                                     if (!l.alreadyupload) {
+                                        if (!l.alreadyupload) {
 
-                                        return (
-                                            // <Swipeout right={swipeoutBtns}>
+                                            return (
+                                                // <Swipeout right={swipeoutBtns}>
 
-                                            <ListItem
-                                                key={i}
-                                                leftIcon={{ name: 'mic' }}
-                                                title={() => {
-                                                    if (!l.changename) {
-                                                        return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
-                                                    } else {
-                                                        return <Text>{l.anothername}</Text>
-                                                    }
-                                                }
-                                                }
-                                                subtitle={l.subtitle}
-                                                bottomDivider
-                                                rightIcon={{
-                                                    name: 'cloud-upload-outline',
-                                                    type: 'ionicon',
-                                                    onPress: () => {
-                                                        if (!l.alreadyupload) {
-
-
-                                                            if (this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))) {
-                                                                console.log("gan")
-                                                                //l.alreadyupload = true;
-                                                            }
-                                                            // l.alreadyupload = true;
-
+                                                <ListItem
+                                                    key={i}
+                                                    leftIcon={{ name: 'mic' }}
+                                                    title={() => {
+                                                        if (!l.changename) {
+                                                            return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
+                                                        } else {
+                                                            return <Text>{l.anothername}</Text>
                                                         }
-                                                        else {
-                                                            alert("bug");
-                                                        }
-
                                                     }
-                                                }}
-                                                onPress={() => {
-                                                    if (l.changename) {
-                                                        navigation.navigate('文字稿', { username:this.props.route.params.user,url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
-                                                    } else {
-                                                        navigation.navigate('文字稿', { username:this.props.route.params.user,url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
+                                                    subtitle={l.subtitle}
+                                                    bottomDivider
 
-                                                }}
-
-                                                onLongPress={() => {
-
-                                                    Alert.alert(
-                                                        "提醒",
-                                                        "確定要刪除嗎",
-                                                        [
-                                                            {
-                                                                text: "確定",
-                                                                onPress: () => this.deleteFile(l.path),
-                                                                style: "cancel"
-                                                            },
-                                                            { text: "沒有", onPress: () => console.log("OK Pressed") },
-                                                            {
-                                                                text: "改檔名",
-                                                                onPress: () => {
-                                                                    prompt(
-                                                                        '改檔名',
-                                                                        '輸入',
-                                                                        [
-                                                                            { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                                                                            {
-                                                                                text: '完成', onPress: n => {
-                                                                                    l.anothername = n;
-                                                                                    l.changename = true;
-                                                                                    console.log('name: ' + n)
-                                                                                    this.ReadDir();
-                                                                                }
-                                                                            },
-                                                                        ],
-                                                                        {
-
-                                                                            placeholder: (l.name.replace("name-", "")).replace(".awb", "")
-                                                                        }
-                                                                    );
-
-
+                                                    rightIcon=
+                                                    {
+                                                        <Icon
+                                                       
+                                                        name= {(a==-1)?'stop' :'cloud-upload-outline'}
+                                                        type= 'ionicon'
+                                                       // color={this.checkIfIDExists(item.id) ? 'red' : 'grey'}
+                                                        onPress= {() => {
+                                                            // console.log("i"+i)
+                                                            // this.setState({ isupload: i })
+                                                            if (!l.alreadyupload) {
+                                                               
+                                                               a=-1;
+                                                               console.log(a);
+                                                               Alert.alert(
+                                                                "提醒",
+                                                                "上傳中",
+                                                                [
+                                                                    {
+                                                                        text: "確認", onPress: () => console.log("OK Pressed")
+                                                                    },
+                                                                    // {
+                                                                    //     text: "改檔名",
+                                                                    //     onPress: () => {
+                                                                    //         prompt(
+                                                                    //             '改檔名',
+                                                                    //             '輸入',
+                                                                    //             [
+                                                                    //                 { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                                                                    //                 {
+                                                                    //                     text: '完成', onPress: n => {
+                                                                    //                         l.anothername = n;
+                                                                    //                         l.changename = true;
+                                                                    //                         console.log('name: ' + n)
+                                                                    //                         this.ReadDir();
+                                                                    //                     }
+                                                                    //                 },
+                                                                    //             ],
+                                                                    //             {
+    
+                                                                    //                 placeholder: (l.name.replace("name-", "")).replace(".awb", "")
+                                                                    //             }
+                                                                    //         );
+    
+    
+                                                                    //     }
+                                                                    // },
+                                                                ],
+                                                                { cancelable: false }
+                                                            );
+                                                               
+                                                                // console.log("isupload"+isupload)
+                                                                // console.log("i2"+i)
+                                                                // console.log(this._compare(i, isupload));
+                                                                //    console.log(  l.isupload)
+                                                                if (this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))) {
+                                                                    console.log("gan")
+                                                                    //l.alreadyupload = true;
                                                                 }
-                                                            },
-                                                        ],
-                                                        { cancelable: false }
-                                                    );
-                                                }}
-                                            />
-                                            // </Swipeout>
-                                        )
+                                                                // l.alreadyupload = true;
+
+                                                            }
+                                                            else {
+                                                                alert("bug");
+                                                            }
+
+                                                        }}
+                                                      />
+                                                    }
+                                        
+                                                    onPress={() => {
+                                                        if (l.changename) {
+                                                            navigation.navigate('文字稿', { username: this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                        } else {
+                                                            navigation.navigate('文字稿', { username: this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
+                                                        }
+
+                                                    }}
+
+                                                    onLongPress={() => {
+
+                                                        Alert.alert(
+                                                            "提醒",
+                                                            "確定要刪除嗎?",
+                                                            [
+                                                                {
+                                                                    text: "確定",
+                                                                    onPress: () => console.log("OK Pressed")
+                                                                },
+                                                                { text: "沒有", onPress: () => console.log("OK Pressed") },
+                                                                // {
+                                                                //     text: "改檔名",
+                                                                //     onPress: () => {
+                                                                //         prompt(
+                                                                //             '改檔名',
+                                                                //             '輸入',
+                                                                //             [
+                                                                //                 { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                                                                //                 {
+                                                                //                     text: '完成', onPress: n => {
+                                                                //                         l.anothername = n;
+                                                                //                         l.changename = true;
+                                                                //                         console.log('name: ' + n)
+                                                                //                         this.ReadDir();
+                                                                //                     }
+                                                                //                 },
+                                                                //             ],
+                                                                //             {
+
+                                                                //                 placeholder: (l.name.replace("name-", "")).replace(".awb", "")
+                                                                //             }
+                                                                //         );
+
+
+                                                                //     }
+                                                                // },
+                                                            ],
+                                                            { cancelable: false }
+                                                        );
+                                                    }}
+                                                />)
+                                        } else {
+                                            return (
+                                                <ListItem
+                                                    key={i}
+                                                    leftIcon={{ name: 'mic' }}
+                                                    title={() => {
+                                                        if (!l.changename) {
+                                                            return <Text>{(l.name.replace("name-", "")).replace(".awb", "")}</Text>
+                                                        } else {
+                                                            return <Text>{l.anothername}</Text>
+                                                        }
+                                                    }
+                                                    }
+                                                    subtitle={l.subtitle}
+                                                    bottomDivider
+
+                                                    rightIcon={{
+                                                        name: 'cloud-upload-outline',
+                                                        type: 'ionicon',
+                                                        onPress: () => {
+                                                            if (!l.alreadyupload) {
+                                                                console.log(i);
+                                                                // l.isupload = true;
+                                                                //Alert.alert( <Animatable.Text animation="slideInDown" iterationCount={5} direction="alternate">Up and down you go</Animatable.Text>)
+                                                                if (this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))) {
+                                                                    console.log("gan")
+                                                                    //l.alreadyupload = true;
+                                                                }
+                                                                // l.alreadyupload = true;
+
+                                                            }
+                                                            else {
+                                                                alert("bug");
+                                                            }
+
+                                                        }
+                                                    }}
+                                                    onPress={() => {
+                                                        if (l.changename) {
+                                                            navigation.navigate('文字稿', { username: this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                        } else {
+                                                            navigation.navigate('文字稿', { username: this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
+                                                        }
+
+                                                    }}
+
+                                                    onLongPress={() => {
+
+                                                        Alert.alert(
+                                                            "提醒",
+                                                            "確定要刪除嗎?",
+                                                            [
+                                                                {
+                                                                    text: "重新上傳",
+                                                                    style: "cancel",
+                                                                    onPress: () => {
+                                                                        this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))
+                                                                    }
+                                                                },
+                                                                {
+                                                                    text: "確定",
+                                                                    onPress: () => this.deleteFile(l.path),
+                                                                    
+                                                                },
+                                                                { text: "沒有", onPress: () => console.log("OK Pressed") },
+                                                                
+                                                            ],
+                                                            { cancelable: false }
+                                                        );
+                                                    }} />
+                                            )
+                                        }
+
+
+                                        // </Swipeout>
+
                                     }
                                     if (l.alreadyupload) {
                                         return (
@@ -510,9 +649,9 @@ export default class history extends Component {
                                                 }}
                                                 onPress={() => {
                                                     if (l.changename) {
-                                                        navigation.navigate('文字稿', { username:this.props.route.params.user,url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
+                                                        navigation.navigate('文字稿', { username: this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.anothername), l: l.alreadyupload })
                                                     } else {
-                                                        navigation.navigate('文字稿', {username:this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
+                                                        navigation.navigate('文字稿', { username: this.props.route.params.user, url: l.path, time: 5, name: (l.name.replace("name-", "")).replace(".awb", ""), showname: (l.name.replace("name-", "")).replace(".awb", ""), l: l.alreadyupload })
                                                     }
 
                                                 }}
@@ -520,41 +659,21 @@ export default class history extends Component {
 
                                                     Alert.alert(
                                                         "提醒",
-                                                        "確定要刪除嗎",
+                                                        "確定要刪除嗎?",
                                                         [
+                                                            {
+                                                                text: "重新上傳",
+                                                                style: "cancel",
+                                                                onPress: () => {
+                                                                    this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))
+                                                                }
+                                                            },
                                                             {
                                                                 text: "確定",
                                                                 onPress: () => this.deleteFile(l.path),
-                                                                style: "cancel"
+                                                                
                                                             },
-
                                                             { text: "沒有", onPress: () => console.log("OK Pressed") },
-                                                            {
-                                                                text: "改檔名",
-                                                                onPress: () => {
-                                                                    prompt(
-                                                                        '改檔名',
-                                                                        '輸入',
-                                                                        [
-                                                                            { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                                                                            {
-                                                                                text: '完成', onPress: n => {
-                                                                                    l.anothername = n;
-                                                                                    l.changename = true;
-                                                                                    console.log('name: ' + n)
-                                                                                    this.ReadDir();
-                                                                                }
-                                                                            },
-                                                                        ],
-                                                                        {
-
-                                                                            placeholder: (l.name.replace("name-", "")).replace(".awb", "")
-                                                                        }
-                                                                    );
-
-
-                                                                }
-                                                            },
                                                         ],
                                                         { cancelable: false }
                                                     );
