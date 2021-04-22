@@ -1,4 +1,4 @@
-# 大學專題<SpeeChord>
+# 大學專題SpeeChord
 
 
 結合 google speech -to-text api 和 Python SnowNLP package的react native app。此app錄音後可轉換成逐字稿並自動摘要；且加上音檔回播和文檔編輯、分享的功能。
