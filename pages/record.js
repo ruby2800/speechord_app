@@ -7,13 +7,7 @@ import Sound from 'react-native-sound';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
 import historypage from './history';
 import * as Animatable from 'react-native-animatable';
-//MyCustomComponent = Animatable.createAnimatableComponent(MyCustomComponent);
-//import WaveView from "react-native-wave-view";
-//import {Surface, Shape} from '@react-native-community/art';
-//import { HcdWaveView } from 'react-native-art-hcdwave'
 
-//import Wave from 'react-wavify'
-//import RNSiriWaveView from 'react-native-siri-wave-view';
 
 
 
@@ -82,12 +76,7 @@ export default class App extends Component {
             })
     };
 
-    /**
-     * AudioRecorder.prepareRecordingAtPath(path,option)
-     * 录制路径
-     * path 路径
-     * option 参数
-     */
+ 
     prepareRecordingPath = (path) => {
         const option = {
             SampleRate: 16000, //採樣率
@@ -189,11 +178,6 @@ export default class App extends Component {
 
             await AudioRecorder.stopRecording();
             this.forceRemount();
-            //this.refunction();
-
-
-            // this._upload;
-
             navigation.navigate('歷史紀錄', { url: this.state.audioPath, reload: 0 });
 
         } catch (error) {
@@ -215,15 +199,6 @@ export default class App extends Component {
         totalMin = totalMin > 9 ? totalMin : '0' + totalMin;
         totalHour = totalHour > 9 ? totalHour : '0' + totalHour;
 
-        // if( this.props.route.params.record==0){
-
-        //     this._record;
-        //     console.log(this.props.route.params.record)
-        // }
-        
-
-      // console.log(this.props.route.params.user);
-
 
         return (
 
@@ -243,12 +218,8 @@ export default class App extends Component {
                    
                     <View style={{ flex: 2, justifyContent: 'space-around', alignItems: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            {/* <Icon name='mic' type='material' color='red' /> */}
                             <Text style={{ fontSize: 50, fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>{totalHour}:{totalMin}:{totalSec}</Text>
-                            {/* <Text style={{ fontSize: 16, }}>{
-                                recording ? '錄音中' :
-                                    pause ? '暫停' : ''
-                            }</Text> */}
+
                             <View>{
                                 recording ?
                                     <View>
@@ -267,11 +238,6 @@ export default class App extends Component {
                                         </View>
 
                             }</View>
-
-                            {/* <Image
-                                source={require('./wave2.jpg')}
-                                style={{ width: 100, height: 100 }}
-                            /> */}
 
                         </View>
                         <View style={{ flex: 1, alignItems: 'center' }}>{
@@ -293,27 +259,8 @@ export default class App extends Component {
                             }</View>
                         }
 
-
-
                         </View>
 
-                        {/* <View style={styles.container}>
-                            <HcdWaveView
-                                surfaceWidth={230}
-                                surfaceHeigth={230}
-                                powerPercent={76}
-                                type="dc"
-                                style={{ backgroundColor: '#FF7800' }}></HcdWaveView>
-                            <HcdWaveView
-                                surfaceWidth={230}
-                                surfaceHeigth={230}
-                                powerPercent={76}
-                                type="ac"
-                                style={{ backgroundColor: '#FF7800' }}></HcdWaveView>
-                        </View> */}
-
-
-                        {/* <Text style={styles.text} onPress={this._readFile}>上傳 </Text> */}
                     </View>
 
                 </View>

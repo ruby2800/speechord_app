@@ -106,53 +106,27 @@ export default class history extends Component {
 
 
                                 await this.filestate("user", shortname, result[i].name, result[i].path);
-                                //console.log(output);
-                                //  await this.setState({response:output});
+                               
 
                                 //不知為啥這個 一定要留
                                 await this.setStateAsync({ response: output });
 
-                                // let obj = { 'name': result[i].name, 'path': result[i].path, 'alreadyupload': false, 'changename': false, 'anothername': "" }; //這裡接api然後可以用string判別01
-                                //要到最後才能看有沒有上傳
-
-                                //                       this.setState({ startread: (i + 1) })
                             }
 
                         }
-                        // asy = true;
-                        // if (asy) {
-                        //     this.setState({
-
-                        //         response: output,
-
-                        //     })
-                        // }
-
-
-
-
+ 
                     }
 
-                    //  console.log(output);
-                    // this.setState({
-
-                    //     output: []
-
-                    // })
                 })
-            // .then(() => {
-            //     this.setState({ response: output });
-            //     
-            // })
 
             .catch((err) => {
                 console.log("錯誤" + err.message + err.code);
             });
 
-        // 
 
 
     }
+    //讀取檔案狀況
     async filestate(user, sname, fname, fpath) {
 
         let { startread, output } = this.state;
@@ -277,7 +251,7 @@ export default class history extends Component {
             })
             .then(result => {
                 console.log("success", result)
-                //有存入
+                //音檔有存入
                 fetch(`http://140.115.81.199:9943/bucketUpload`,
                     {
                         method: 'POST',

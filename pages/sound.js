@@ -42,8 +42,8 @@ export default class App extends React.Component {
             //let totalTime = time + 1;
             console.log("時間" + totalTime);
             totalTime = Math.ceil(totalTime);
-            let totalMin = parseInt(totalTime / 60); //总分钟数
-            let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
+            let totalMin = parseInt(totalTime / 60); //分鐘
+            let totalSec = totalTime - totalMin * 60; 
             totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
             this.setState({
                 totalMin,
@@ -86,8 +86,8 @@ export default class App extends React.Component {
                 //let totalTime = time + 1;
                 console.log("時間" + totalTime);
                 totalTime = Math.ceil(totalTime);
-                let totalMin = parseInt(totalTime / 60); //总分钟数
-                let totalSec = totalTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
+                let totalMin = parseInt(totalTime / 60); //分鐘
+                let totalSec = totalTime - totalMin * 60; 
                 totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
                 this.setState({
                     totalMin,
@@ -127,7 +127,7 @@ export default class App extends React.Component {
         // }         
     }
 
-    // 暂停
+    // 暫停
     _pause = () => {
         clearInterval(this.time);
         this.setState({ pause: true, play: false,resume:true })
@@ -150,7 +150,7 @@ export default class App extends React.Component {
         let nowMin = this.state.nowMin,
             nowSec = this.state.nowSec;
         if (seconds >= 60) {
-            nowMin = parseInt(seconds / 60); //当前分钟数
+            nowMin = parseInt(seconds / 60); //分鐘
             nowSec = seconds - nowMin * 60;
             nowSec = nowSec < 10 ? '0' + nowSec : nowSec;
         } else {
@@ -169,13 +169,7 @@ export default class App extends React.Component {
         let { play, pause } = this.state;
 
             return (
-                < ScrollView 
-                // refreshControl={
-                //     < RefreshControl
-                //         refreshing={this.state.refreshing}
-                //         onRefresh={this._onRefresh}
-                //     />}
-                >
+                < ScrollView >
                   <View style={{flex:1}}>
                     <Header
                         placement="left"
@@ -217,16 +211,16 @@ export default class App extends React.Component {
                                 {/* Slider */}
                         <View style={{ flex: 1, paddingHorizontal:10, justifyContent: 'space-around'}}>
                             <Slider                      
-                                // disabled //禁止滑动
-                                maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
-                                minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
-                                maximumValue={this.state.maximumValue} //滑块最大值
-                                minimumValue={0} //滑块最小值
+                                // disabled //禁止滑
+                                maximumTrackTintColor={'#ccc'} //右側顏色
+                                minimumTrackTintColor={'skyblue'} //左側顏色
+                                maximumValue={this.state.maximumValue} //最大值
+                                minimumValue={0} 
                                 value={this.state.seconds}
-                                onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
+                                onSlidingComplete={(value) => { 
                                     value = parseInt(value);
                                     this._getNowTime(value)
-                                    // 设置播放时间
+                                    // 設定撥放時間
                                     whoosh.setCurrentTime(value);
                                 }} />
                         </View>
