@@ -52,12 +52,16 @@ export default class App extends React.Component {
         //forRefresh
         _onRefresh = () => {
             console.log("refresh")
+            whoosh.stop();
+            this.setState({      
+                play: false,
+            })
             this.setState({ refreshing: true });
             this.componentDidMount()
                 .then(() => {
                     this.setState({ refreshing: false });
                 });
-            this.wait(5000).then(() => {
+            this.wait(6000).then(() => {
                 this.setState({ refreshing: false });
                 //Alert message
             });
@@ -70,6 +74,11 @@ export default class App extends React.Component {
         }
 
     async componentDidMount() {
+
+        // whoosh.stop();
+        // this.setState({      
+        //     play: false,
+        // })
         //音檔位置
         let url = this.props.route.params.url;
         //初始化
@@ -243,7 +252,15 @@ export default class App extends React.Component {
             console.log("play" + url);
         }
         else {
-            whoosh.play();
+            whoosh.play(success => {
+                if (success) {
+                    console.log('success - 播放成功')
+                    this._stop();
+                }
+                else {
+                    console.log('fail - 播放失败')
+                }
+            })
             console.log("resume")
             this.setState({ resume: false, pause: false, play: true })
             console.log("play" + this.state.resume)
@@ -502,7 +519,7 @@ export default class App extends React.Component {
                                     onPress: () => this.editTrans(),
                                 },
                                 {
-                                    icon: 'download',
+                                    icon: 'share',
                                     label: '匯出',
                                     onPress: () => this.trans_download(),
                                 },
@@ -647,7 +664,7 @@ export default class App extends React.Component {
                                     onPress: () => this.editSumm(),
                                 },
                                 {
-                                    icon: 'download',
+                                    icon: 'share',
                                     label: '匯出',
                                     onPress: () => this.summ_download(),
                                 },
@@ -690,7 +707,7 @@ export default class App extends React.Component {
                                     </TouchableHighlight>
 
                                     <TouchableHighlight
-                                        style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                                        style={{ ...styles.openButton, backgroundColor: "grey" }}
                                         onPress={() => {
                                             setModalVisible(false);
                                         }}
@@ -958,10 +975,7 @@ export default class App extends React.Component {
                                     color: 'white'
                                 }
                             }}
-                        // rightComponent={{ 
-                        //     icon: 'cw', type: 'entypo', color: '#fff', underlayColor: '#3488C0', 
-                        //     onPress: () => {this._onRefresh()} 
-                        // }}
+                            //rightComponent={{ icon: 'refresh', color: '#fff', underlayColor: '#3488C0', onPress: () => this._onRefresh() }}
                         />
 
                         <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around' }}>
@@ -1017,81 +1031,70 @@ export default class App extends React.Component {
                             onRefresh={this._onRefresh}
                         />}
                     >
-                        <View style={{ flex: 1 }}>
-                            <Header
-                                placement="left"
-                                backgroundColor='transparent'
-                                containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
-                                leftComponent={{
-                                    icon: 'close', color: '#fff', underlayColor: '#3488C0', size: 30,
-                                    onPress: () => this.backAction()
-                                }}
+                                <Header
+                                    placement="left"
+                                    backgroundColor='transparent'
+                                    containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
+                                    leftComponent={{
+                                        icon: 'close', color: '#fff', underlayColor: '#3488C0', size: 30,
+                                        onPress: () => this.backAction()
+                                    }}
 
-                                centerComponent={{
-                                    text: this.props.route.params.showname,
-                                    style: {
-                                        fontSize: 22,
-                                        fontWeight: 'bold',
-                                        fontFamily: 'Fonts.Lato',
-                                        color: 'white'
-                                    }
-                                }}
-                            // rightComponent={{ icon: 'export', type: 'entypo', color: '#fff', underlayColor: '#3488C0', onPress: () => { } }}
-                            />
-
-                            <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around' }}>
-                                {/* time&icon */}
-                                <View style={{ flex: 1, paddingTop: 10, marginHorizontal: 30, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                                    <View>
-                                        <Text style={{ fontSize: 18 }}>{time.nowMin}:{time.nowSec}/{time.totalMin}:{time.totalSec}</Text>
-                                    </View>
-                                    {/* play&pause icon */}
-                                    <View>
-                                        {
-                                            play ?
-                                                <Icon name='controller-paus' type='entypo' size={25} color="black" onPress={this._pause} />
-                                                :
-                                                <Icon name='controller-play' type='entypo' size={30} color="black" onPress={this._play} />
+                                    centerComponent={{
+                                        text: this.props.route.params.showname,
+                                        style: {
+                                            fontSize: 22,
+                                            alignContent: 'space-around',
+                                            fontWeight: 'bold',
+                                            fontFamily: 'Fonts.Lato',
+                                            color: 'white'
                                         }
+                                    }}
+                                    //rightComponent={{ icon: 'refresh', color: '#fff', underlayColor: '#3488C0', onPress: () => this._onRefresh() }}
+                                />
+
+                                <View style={{ backgroundColor: 'white', flexDirection: 'column', justifyContent: 'space-around' }}>
+                                    {/* time&icon */}
+                                    <View style={{ flex: 1, paddingTop: 15, marginHorizontal: 30, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                                        <View>
+                                            <Text style={{ fontSize: 18 }}>{time.nowMin}:{time.nowSec}/{time.totalMin}:{time.totalSec}</Text>
+                                        </View>
+                                        {/* play&pause icon */}
+                                        <View>
+                                            {
+                                                play ?
+                                                    <Icon name='controller-paus' type='entypo' size={30} color="black" onPress={this._pause} />
+                                                    :
+                                                    <Icon name='controller-play' type='entypo' size={30} color="black" onPress={this._play} />
+                                            }
+                                        </View>
+                                    </View>
+                                    {/* Slider */}
+                                    <View style={{ flex: 1, paddingHorizontal: 10, justifyContent: 'space-around' }}>
+                                        <Slider
+                                            // disabled //禁止滑动
+                                            maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
+                                            minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
+                                            maximumValue={this.state.maximumValue} //滑块最大值
+                                            minimumValue={0} //滑块最小值
+                                            value={this.state.seconds}
+                                            onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
+                                                value = parseInt(value);
+                                                this._getNowTime(value)
+                                                // 设置播放时间
+                                                whoosh.setCurrentTime(value);
+                                            }} />
                                     </View>
                                 </View>
-                                {/* Slider */}
-                                <View style={{ flex: 1, paddingHorizontal: 10, justifyContent: 'space-around' }}>
-                                    <Slider
-                                        // disabled //禁止滑动
-                                        maximumTrackTintColor={'#ccc'} //右侧轨道的颜色
-                                        minimumTrackTintColor={'skyblue'} //左侧轨道的颜色
-                                        maximumValue={this.state.maximumValue} //滑块最大值
-                                        minimumValue={0} //滑块最小值
-                                        value={this.state.seconds}
-                                        onSlidingComplete={(value) => { //用户完成更改值时调用的回调（例如，当滑块被释放时）
-                                            value = parseInt(value);
-                                            this._getNowTime(value)
-                                            // 设置播放时间
-                                            whoosh.setCurrentTime(value);
-                                        }} />
-                                </View>
-                            </View>
 
-                            <View >
-                                {/* <Text style={{textAlign:'center', fontSize:20, fontWeight:"bold", padding:30}}>Network Error!!!</Text> */}
-                                <Text style={{ textAlign: 'center', margin: 30, fontSize: 15, color: "grey" }}>下拉重新整理</Text>
-                                <Text style={{ textAlign: 'center', fontSize: 18, color: "black", textDecorationLine:"underline"}}> 以下幾點可能造成無法顯示文字稿：</Text>
-                                <View style={{alignSelf:"center",  width:300}}>
+                                <View >
+                                    {/* <Text style={{textAlign:'center', fontSize:20, fontWeight:"bold", padding:30}}>Network Error!!!</Text> */}
+                                    <Text style={{ textAlign: 'center', margin: 30, fontSize: 15, color: "grey" }}>下拉重新整理</Text>
+                                    <Text style={{ textAlign: 'center', fontSize: 18, color: "black", textDecorationLine:"underline"}}> 以下幾點可能造成無法顯示文字稿：</Text>
+                                    <View style={{alignSelf:"center",  width:300}}>
                                     <Text style={{ textAlign: 'left', marginTop:15, fontSize: 16, color: "black" }}>1. 音檔尚未上傳{'\n'}2. 網路異常{'\n'}...</Text></View>
-                            </View>
-
-                            {/* {isLoading && 
-                                (
-                                <ActivityIndicator
-                                    style={{ height: 80 }}
-                                    color="#C00"
-                                    size="large"
-                                />
-                                )}   */}
-
-                        </View>
-                    </ ScrollView>
+                                </View>                               
+                  </ ScrollView>
                 );
             }
     }
@@ -1124,9 +1127,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F194FF",
         borderRadius: 10,
         padding: 10,
+        paddingHorizontal:18,
         elevation: 2
     },
     textStyle: {
+        fontSize:15,
         color: "white",
         fontWeight: "bold",
         textAlign: "center"

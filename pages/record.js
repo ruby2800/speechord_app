@@ -38,16 +38,16 @@ export default class App extends Component {
 
 
         this.state = {
-            hasPermission: undefined, //授权状态     
+            hasPermission: undefined, //授權狀態     
             //audioPath: AudioUtils.DocumentDirectoryPath + 'test.aac',  // 文件路径
             //現在他上傳的時間 使用者名稱
             //要尊守規定
             audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year}-${month}-${day}_${hour + minute + second}.awb`,  // 文件路径
-            recording: false, //是否录音
-            pause: false, //录音是否暂停
-            stop: false, //录音是否停止
+            recording: false, //是否錄音
+            pause: false, //錄音是否暫停
+            stop: false, //錄音是否停止
             resume: false,
-            currentTime: 0, //录音时长
+            currentTime: 0, //錄音時長
 
 
         };
@@ -57,7 +57,7 @@ export default class App extends Component {
     componentDidMount() {
 
 
-        // 请求授权
+        // 請求授權
         AudioRecorder.requestAuthorization()
             .then(isAuthor => {
                 console.log('是否授權: ' + isAuthor)
@@ -66,14 +66,14 @@ export default class App extends Component {
                 }
                 this.setState({ hasPermission: isAuthor })
                 this.prepareRecordingPath(this.state.audioPath);
-                // 录音进展
+                //錄音進展
                 AudioRecorder.onProgress = (data) => {
                     let decibels = 10 * Math.log10(data.currentPeakMetering / data.currentMetering) * -0.25
                     this.setState({ currentTime: Math.floor(data.currentTime) });
                 };
-                // 完成录音
+                // 完成錄音
                 AudioRecorder.onFinished = (data) => {
-                    // data 返回需要上传到后台的录音数据
+                    // data 返回
                     console.log(this.state.currentTime)
                     console.log(this.state.audioPath);
                     //console.log(this.state.whoosh);
@@ -90,21 +90,21 @@ export default class App extends Component {
      */
     prepareRecordingPath = (path) => {
         const option = {
-            SampleRate: 16000, //采样率
+            SampleRate: 16000, //採樣率
             Channels: 1, //通道
-            AudioQuality: 'High', //音质
-            AudioEncoding: 'amr_wb', //音频编码
-            OutputFormat: 'amr_wb', //输出格式
-            MeteringEnabled: false, //是否计量
-            MeasurementMode: false, //测量模式
-            AudioEncodingBitRate: 16000, //音频编码比特率
+            AudioQuality: 'High', //音質
+            AudioEncoding: 'amr_wb', //音頻編碼
+            OutputFormat: 'amr_wb', //輸出格式
+            MeteringEnabled: false, //是否計量
+            MeasurementMode: false, //測量
+            AudioEncodingBitRate: 16000, //編碼
             IncludeBase64: true, //是否是base64格式
-            AudioSource: 0, //音频源
+            AudioSource: 0, //音頻源
         }
         AudioRecorder.prepareRecordingAtPath(path, option)
     }
 
-    // 开始录音
+    // 開始錄音
     _record = async () => {
 
         if (!this.state.hasPermission) {
@@ -125,7 +125,7 @@ export default class App extends Component {
         }
     }
 
-    // 暂停录音
+    // 暫停錄音
     _pause = async () => {
         if ((!this.state.recording)) {
             return alert('請先按下錄音鍵')
@@ -139,7 +139,7 @@ export default class App extends Component {
         }
     }
 
-    // 恢复录音
+    // 恢復錄音
     _resume = async () => {
         if (!this.state.pause) {
             return alert('錄音未暫停')
@@ -169,15 +169,16 @@ export default class App extends Component {
 
         this.setState({
 
-            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year}-${month}-${day}_${hour + minute + second}.awb`,  // 文件路径
-            currentTime: 0, //录音时长
+            audioPath: AudioUtils.DocumentDirectoryPath + `/name-${year}-${month}-${day}_${hour + minute + second}.awb`,  // 文件路徑
+            currentTime: 0, //錄音時長
         })
 
     }
 
-    // 停止录音
+    // 停止錄音
     _stop = async () => {
         //要加上去
+
         const { navigation } = this.props;
         this.setState({ stop: true, recording: false, paused: false });
         if ((!this.state.recording)) {
@@ -208,8 +209,8 @@ export default class App extends Component {
 
         currentTime = Math.ceil(currentTime);
         let totalHour = parseInt(currentTime / 3600);
-        let totalMin = parseInt(currentTime / 60); //总分钟数
-        let totalSec = currentTime - totalMin * 60; //秒钟数并判断前缀是否 + '0'
+        let totalMin = parseInt(currentTime / 60); //分鐘
+        let totalSec = currentTime - totalMin * 60; 
         totalSec = totalSec > 9 ? totalSec : '0' + totalSec;
         totalMin = totalMin > 9 ? totalMin : '0' + totalMin;
         totalHour = totalHour > 9 ? totalHour : '0' + totalHour;
@@ -219,9 +220,9 @@ export default class App extends Component {
         //     this._record;
         //     console.log(this.props.route.params.record)
         // }
+        
 
-
-        // console.log(this.props.route.params.user);
+      // console.log(this.props.route.params.user);
 
 
         return (
@@ -239,7 +240,7 @@ export default class App extends Component {
                             onPress: () => this.props.navigation.navigate('歷史紀錄')
                         }}
                     />
-
+                   
                     <View style={{ flex: 2, justifyContent: 'space-around', alignItems: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             {/* <Icon name='mic' type='material' color='red' /> */}
@@ -257,14 +258,12 @@ export default class App extends Component {
 
                                         </Animatable.View>
                                     </View> :
-                                    pause ?
-                                        <View>
-                                            <Text style={{ fontSize: 16, }}>暫停</Text>
-                                            <Icon name='mic' type='material' color='red' />
-                                        </View> :
-                                        <View>
-                                            <Text style={{ fontSize: 16, }}>尚未錄音</Text>
-                                            <Icon name='mic' type='material' color='red' />
+                                    pause ? <View>
+                                        <Text style={{ fontSize: 16, }}>暫停</Text>
+                                        <Icon name='mic' type='material' color='red' />
+                                    </View> : <View>
+                                        <Text style={{ fontSize: 16, }}>尚未錄音</Text>
+                                        <Icon name='mic' type='material' color='red' />
                                         </View>
 
                             }</View>
@@ -284,10 +283,10 @@ export default class App extends Component {
                                     />
                                     :
                                     pause ? <Image
-                                        source={require('./wave4.jpg')}
+                                        source={require('./wave3.jpg')}
                                         style={{ width: 300, height: 150 }}
                                     /> : <Image
-                                            source={require('./wave4.jpg')}
+                                            source={require('./wave3.jpg')}
                                             style={{ width: 300, height: 150 }}
                                         />
 

@@ -89,6 +89,8 @@ target 'HelloWorld2' do
 
   pod 'RNSiriWaveView', :path => '../node_modules/react-native-siri-wave-view'
 
+  pod 'RNSnackbar', :path => '../node_modules/react-native-snackbar'
+
   target 'HelloWorld2Tests' do
     inherit! :complete
     # Pods for testing

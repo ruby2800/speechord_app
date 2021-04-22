@@ -1,6 +1,28 @@
+  
+// import React from 'react';
+// import { View, StyleSheet } from 'react-native';
+import {
+    useTheme,
+
+    Title,
+    Caption,
+    Paragraph,
+    Drawer,
+    Text,
+    TouchableRipple,
+    Switch,
+    Divider
+} from 'react-native-paper';
+// import {
+//     DrawerContentScrollView,
+//     DrawerItem
+// } from '@react-navigation/drawer';
+
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import React, { Component } from 'react';
-import { View, Text, Button, ScrollView, TouchableOpacity } from 'react-native';
-import { SearchBar, Header, Icon } from 'react-native-elements';
+import { View, Button, ScrollView, TouchableOpacity, StyleSheet} from 'react-native';
+import { SearchBar, Header, Icon , Avatar} from 'react-native-elements';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import {
   createDrawerNavigator,
@@ -10,117 +32,122 @@ import {
 } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 // import Icon from 'react-native-vector-icons/Entypo';
-
+import AsyncStorage from '@react-native-community/async-storage';
 import { AudioRecorder, AudioUtils } from 'react-native-audio';
 import Sound from 'react-native-sound';
 
 
 import recordpage from './pages/record';
-import soundpage from './pages/sound';
-import wordpage from './pages/wordfile';
+import wordpage from './pages/WordFile';
 import historypage from './pages/history';
 import launchpage from './pages/Launch';
 import registerpage from './pages/register';
 
 import { color } from 'react-native-reanimated';
 
-console.disableYellowBox = true
+console.disableYellowBox = true;
 
-// function Mainpage({ navigation }) {
-//   return (
-//     <View style={{ flex: 1 }}>
+function DrawerContent(props) {
+  
+  // //隱藏播放
+  // const { state, ...rest } = props;
+  // const newState = { ...state }  //copy from state before applying any filter. do not change original state
+  // newState.routes = newState.routes.filter(item => item.name !== '啓動頁面') 
+  // newState.routes = newState.routes.filter(item => item.name !== '註冊頁面') 
+  // newState.routes = newState.routes.filter(item => item.name !== '文字稿') 
+  // //replace "Login' with your route name
+  // // newState.routes = newState.routes.filter(item => item.name !== '初始頁面')
 
-//       {/* Header&Body */}
-//       <View style={{ flex: 7, backgroundColor: 'white' }}>
-//         {/* <View style={{ flex: 1, }}>                     */}
-//         <Header
-//           placement="left"
-//           // backgroundColor='#E8E8E8'
-//           backgroundColor='#3488C0'
+return(
+  <View style={{flex:1}}>
+      <DrawerContentScrollView {...props}>
+      <View style={styles.drawerContent}>
+              <View style={styles.userInfoSection}>
+                  <View style={{flexDirection:'row', marginTop:10, alignContent:"center"}}>
+                      <Avatar
+                          rounded
+                          size={100}
+                          source={require('./pages/logo.png')}
+                        
+                          avatarStyle={{ borderWidth: 1, borderColor: 'grey', borderRadius: 400/ 2}}
+                      />
+                      <View style={{marginLeft:20, alignSelf:"center"}}>
+                          <Caption>賬號名稱：</Caption>
+                          <Title style={styles.title}>SpeeChord</Title>
+                      </View>
+                  </View>
+                 
+              </View>
+              
+              <Drawer.Section style={styles.drawerSection}>
+              <Divider />
+                  <DrawerItem 
+                      icon={({color, size}) => (
+                          <Icon 
+                          name="history" 
+                          color={color}
+                          size={size}
+                          />
+                      )}
+                      label="歷史紀錄"
 
-//           // containerStyle={{ width: '100%', backgroundColor: '#3488C0', borderBottomWidth: 0 }}
-//           leftComponent={{ icon: 'menu', type: 'entypo', color: 'white', underlayColor: '#3488C0', onPress: () => navigation.openDrawer() }}
-//           centerComponent={{
-//             text: '語音列表',
-//             style: {
-//               fontSize: 20,
-//               fontWeight: 'bold',
-//               fontFamily: 'Fonts.Lato',
-//               color: 'white'
-//             }
-//           }}
-//         />
-//         <ScrollView>
-//           <SearchBar
-//             searchIcon={{ size: 15, color: '#A5A5A5' }}
-//             placeholder="Type Here..."
-//             placeholderTextColor='#A5A5A5'
-//             platform="ios"
-//             inputStyle={{ fontSize: 15 }}
-//             inputContainerStyle={{ height: 10, backgroundColor: '#ECECEC' }}
-//             containerStyle={{ height: 50, backgroundColor: 'transparent' }}
-//           // onChangeText={this.updateSearch}
-//           // value={search}
-//           />
-//         </ScrollView>
-//         {/* </View> */}
-//       </View>
-
-//       {/* Footer */}
-//       <View style={{ flex: 1, backgroundColor: '#E8E8E8' }}>
-//         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-//           <Icon raised name='controller-record' type='entypo' color='red'
-//             onPress={() => navigation.navigate('錄音')}
-//           />
-//         </View>
-//       </View>
-
-//     </View>
-//   );
-// }
-
-function CustomDrawerContent(props) {
-
-  //隱藏播放
-  const { state, ...rest } = props;
-  const newState = { ...state }  //copy from state before applying any filter. do not change original state
-  newState.routes = newState.routes.filter(item => item.name !== '啓動頁面') 
-  newState.routes = newState.routes.filter(item => item.name !== '註冊頁面') 
-  newState.routes = newState.routes.filter(item => item.name !== '文字稿') 
-  //replace "Login' with your route name
-  // newState.routes = newState.routes.filter(item => item.name !== '初始頁面')
-
-  return (
-
-    <DrawerContentScrollView {...props}>
-      <DrawerItemList state={newState} {...rest} />
-      <DrawerItem
-        label="關閉選單"
-        // onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
-        onPress={() => props.navigation.closeDrawer()}
-      />
-    </DrawerContentScrollView>
-  );
+                      onPress={() => {props.navigation.navigate('歷史紀錄')}}
+                  />
+                  <DrawerItem 
+                      icon={({color, size}) => (
+                          <Icon 
+                          name="mic" 
+                          color={color}
+                          size={size}
+                          />
+                      )}
+                      label="錄音"
+                      onPress={() => {props.navigation.navigate('錄音')}}
+                  />
+              </Drawer.Section>
+          
+          </View>
+      </DrawerContentScrollView>
+      <Drawer.Section style={styles.bottomDrawerSection}>
+          <DrawerItem 
+              icon={({color, size}) => (
+                  <Icon 
+                  name="exit-to-app" 
+                  color={color}
+                  size={size}
+                  />
+              )}
+              label="關閉選單"
+              onPress={() => props.navigation.closeDrawer()}
+          />
+      </Drawer.Section>
+  </View>
+);
 }
 
-const Drawer = createDrawerNavigator();
+
+const myDrawer = createDrawerNavigator();
 function MyDrawer() {
   return (
 
-    <Drawer.Navigator drawerContent={props => <CustomDrawerContent {...props} />}>
-      {/* <Drawer.Screen name="初始頁面" component={Mainpage} /> */}
-      <Drawer.Screen name="啓動頁面" component={launchpage}
+    <myDrawer.Navigator  drawerContent={props => <DrawerContent {...props} />}>
+     
+      <myDrawer.Screen name="啓動頁面" component={launchpage}
       options={{
         swipeEnabled: false,
       }} />
-      <Drawer.Screen name="註冊頁面" component={registerpage} />
-      <Drawer.Screen name="歷史紀錄" component={historypage} />
-      <Drawer.Screen name="錄音" component={recordpage} />
-      <Drawer.Screen name="文字稿" component={wordpage}
+      <myDrawer.Screen name="註冊頁面" component={registerpage} 
+      options={{
+        swipeEnabled: false,
+      }} />
+      <myDrawer.Screen name="歷史紀錄" component={historypage} />
+      <myDrawer.Screen name="錄音" component={recordpage} />
+      <myDrawer.Screen name="文字稿" component={wordpage}
        options={{
         swipeEnabled: false,
       }} />
-    </Drawer.Navigator>
+  
+    </myDrawer.Navigator>
 
   );
 }
@@ -134,3 +161,48 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  drawerContent: {
+    flex: 1,
+  },
+  userInfoSection: {
+    paddingLeft: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  // caption: {
+  //   fontSize: 15,
+  //   lineHeight: 5,
+  // },
+  row: {
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  section: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  paragraph: {
+    fontWeight: 'bold',
+    marginRight: 3,
+  },
+  drawerSection: {
+    marginTop: 15,
+  },
+  bottomDrawerSection: {
+      marginBottom: 15,
+      borderTopColor: '#f4f4f4',
+      borderTopWidth: 1
+  },
+  preference: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+});

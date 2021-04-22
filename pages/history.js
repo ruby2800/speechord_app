@@ -5,6 +5,7 @@ import { ListItem, Header, Icon } from 'react-native-elements'
 import RNFS from 'react-native-fs';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { AudioUtils } from 'react-native-audio';
+import Snackbar from 'react-native-snackbar';
 // import { ScrollView } from 'react-native-gesture-handler';
 
 // import Upload from 'react-native-background-upload'
@@ -66,7 +67,7 @@ export default class history extends Component {
     }
 
 
-    // 读取目录
+    // 讀取目錄
     //最新的陣列 三個陣列! == 比對 
     async ReadDir() {
         let { startread, output } = this.state;
@@ -189,7 +190,11 @@ export default class history extends Component {
 
                 output.push(obj);
             }
+            
             )
+            .catch((err) => {
+                console.log("錯誤2" + err.message + err.code);
+            });
     }
 
     //差不多的方式可改名稱
@@ -257,6 +262,7 @@ export default class history extends Component {
         formData2.append('fileName', filename)
         //之後要抓使用者名稱
 
+        //音檔上傳
         fetch(`http://140.115.81.199:9943/audioUpload`,
             {
                 method: 'POST',
@@ -271,6 +277,7 @@ export default class history extends Component {
             })
             .then(result => {
                 console.log("success", result)
+                //有存入
                 fetch(`http://140.115.81.199:9943/bucketUpload`,
                     {
                         method: 'POST',
@@ -285,6 +292,9 @@ export default class history extends Component {
                     })
                     .then(result => {
                         console.log("success", result)
+                        // this.timeout(200000, fetch(`http://140.115.81.199:9943/textDown`,
+                        
+                        //回傳逐字稿
                         fetch(`http://140.115.81.199:9943/textDown`,
                             {
                                 method: 'POST',
@@ -300,6 +310,7 @@ export default class history extends Component {
                             })
                             .then(result => {
                                 console.log("success", result)
+                                //回傳摘要搞
                                 fetch(`http://140.115.81.199:9943/snowDown`,
                                     {
                                         method: 'POST',
@@ -346,6 +357,14 @@ export default class history extends Component {
             return false;
         }
     }
+    timeout(ms, promise) {
+        return new Promise(function(resolve, reject) {
+          setTimeout(function() {
+            reject(new Error("timeout"))
+          }, ms)
+          promise.then(resolve, reject)
+        })
+      }
 
 
     render() {
@@ -438,53 +457,20 @@ export default class history extends Component {
                                                         type= 'ionicon'
                                                        // color={this.checkIfIDExists(item.id) ? 'red' : 'grey'}
                                                         onPress= {() => {
-                                                            // console.log("i"+i)
-                                                            // this.setState({ isupload: i })
+                                                   
                                                             if (!l.alreadyupload) {
                                                                
                                                                a=-1;
                                                                console.log(a);
-                                                               Alert.alert(
-                                                                "提醒",
-                                                                "上傳中",
-                                                                [
-                                                                    {
-                                                                        text: "確認", onPress: () => console.log("OK Pressed")
-                                                                    },
-                                                                    // {
-                                                                    //     text: "改檔名",
-                                                                    //     onPress: () => {
-                                                                    //         prompt(
-                                                                    //             '改檔名',
-                                                                    //             '輸入',
-                                                                    //             [
-                                                                    //                 { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                                                                    //                 {
-                                                                    //                     text: '完成', onPress: n => {
-                                                                    //                         l.anothername = n;
-                                                                    //                         l.changename = true;
-                                                                    //                         console.log('name: ' + n)
-                                                                    //                         this.ReadDir();
-                                                                    //                     }
-                                                                    //                 },
-                                                                    //             ],
-                                                                    //             {
-    
-                                                                    //                 placeholder: (l.name.replace("name-", "")).replace(".awb", "")
-                                                                    //             }
-                                                                    //         );
-    
-    
-                                                                    //     }
-                                                                    // },
-                                                                ],
-                                                                { cancelable: false }
-                                                            );
-                                                               
-                                                                // console.log("isupload"+isupload)
-                                                                // console.log("i2"+i)
-                                                                // console.log(this._compare(i, isupload));
-                                                                //    console.log(  l.isupload)
+                                                               Snackbar.show({
+                                                                text: '上傳中',
+                                                                duration: Snackbar.LENGTH_LONG,
+                                                                // backgroundColor:"lightgrey",
+                                                                
+                                                                textColor:"white",
+ 
+                                                              });
+
                                                                 if (this._upload(l.path, (l.name.replace("name-", "")).replace(".awb", ""))) {
                                                                     console.log("gan")
                                                                     //l.alreadyupload = true;
@@ -517,35 +503,10 @@ export default class history extends Component {
                                                             [
                                                                 {
                                                                     text: "確定",
-                                                                    onPress: () => console.log("OK Pressed")
+                                                                    onPress: () => this.deleteFile(l.path),
                                                                 },
                                                                 { text: "沒有", onPress: () => console.log("OK Pressed") },
-                                                                // {
-                                                                //     text: "改檔名",
-                                                                //     onPress: () => {
-                                                                //         prompt(
-                                                                //             '改檔名',
-                                                                //             '輸入',
-                                                                //             [
-                                                                //                 { text: '取消', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                                                                //                 {
-                                                                //                     text: '完成', onPress: n => {
-                                                                //                         l.anothername = n;
-                                                                //                         l.changename = true;
-                                                                //                         console.log('name: ' + n)
-                                                                //                         this.ReadDir();
-                                                                //                     }
-                                                                //                 },
-                                                                //             ],
-                                                                //             {
-
-                                                                //                 placeholder: (l.name.replace("name-", "")).replace(".awb", "")
-                                                                //             }
-                                                                //         );
-
-
-                                                                //     }
-                                                                // },
+                                   
                                                             ],
                                                             { cancelable: false }
                                                         );

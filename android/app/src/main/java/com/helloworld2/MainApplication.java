@@ -6,6 +6,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.azendoo.reactnativesnackbar.SnackbarPackage;
+import com.azendoo.reactnativesnackbar.SnackbarPackage;
 
 import im.shimo.react.prompt.RNPromptPackage;
 import com.reactlibrary.RNSshClientPackage;

@@ -1,21 +1,74 @@
 import {AppRegistry , Image } from 'react-native';
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet , Alert} from 'react-native'
 import { Input, Icon } from 'react-native-elements';
 import { Button } from 'react-native-elements';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-community/async-storage';
+import Snackbar from 'react-native-snackbar';
 
 export default class Launch extends Component {
 
     regis = () => {
+            // actual use
+        // AsyncStorage.getItem('userName').then((user)=>{
+        //     console.log(user)
+        //     if(user !== null) {
+        //         // value previously stored
+        //         // Alert.alert("你已註冊過");
+        //         Snackbar.show({
+        //             text: '你已註冊過',
+        //             duration: Snackbar.LENGTH_LONG,
+        //             // backgroundColor:"lightgrey",
+        //             textColor:"white",
+             
+        //             // action: {
+        //             //   text: 'UNDO',
+        //             //   textColor: 'red',
+        //             //   onPress: () => { /* Do something. */ },
+        //             // },
+        //           });
+
+        //     } else {
+        //         const { navigation } = this.props;
+        //         navigation.navigate('註冊頁面');
+        //     }
+        // })
+
+        //     //for test register.js
         const { navigation } = this.props;
         navigation.navigate('註冊頁面');
     }
     
     enterapp = () => {
-        const { navigation } = this.props;
-        navigation.navigate('歷史紀錄');
+        AsyncStorage.getItem('userName').then((user)=>{
+            console.log(user)
+            if(user !== null) {
+                // value previously stored
+                this.props.navigation.navigate('歷史紀錄',{
+                    user : user ,
+                })
+            } else {
+                // Alert.alert("首次進入需要先註冊");
+                Snackbar.show({
+                    text: '首次進入需要先註冊',
+                    duration: Snackbar.LENGTH_LONG,
+                    // backgroundColor:"lightgrey",
+                    textColor:"white",
+             
+                    // action: {
+                    //   text: 'UNDO',
+                    //   textColor: 'red',
+                    //   onPress: () => { /* Do something. */ },
+                    // },
+                  });
+            }
+        })
+         
+    
+        
+        // const { navigation } = this.props;
+        // navigation.navigate('歷史紀錄');
     }
     render() {  
       return (
